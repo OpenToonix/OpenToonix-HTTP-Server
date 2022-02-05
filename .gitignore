@@ -1,3 +1,6 @@
+### Toonix images ###
+**/toonix/*.png
+
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
