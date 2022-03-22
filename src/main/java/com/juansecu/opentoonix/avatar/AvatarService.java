@@ -42,7 +42,7 @@ public class AvatarService {
         UUID uuid = UUID.randomUUID();
         BufferedImage image;
         byte[] imageData = Base64.getDecoder().decode(newAvatarReqDto.getImageData());
-        File outputFile = new File("src/main/resources/static/images/toonix/" + uuid + ".png");
+        File outputFile = new File("src/main/resources/public/images/toonix/" + uuid + ".png");
 
         image = ImageIO.read(new ByteArrayInputStream(imageData));
         ImageIO.write(image, "png", outputFile);
@@ -55,7 +55,7 @@ public class AvatarService {
         newAvatar.setMouth(newAvatarReqDto.getMouth());
         newAvatar.setBody(newAvatarReqDto.getBody());
         newAvatar.setBodyColor(newAvatarReqDto.getBodyColor());
-        newAvatar.setImagePath(uuid + ".png");
+        newAvatar.setImagePath("/images/toonix/" + uuid + ".png");
         newAvatar.setUserId(user);
 
         this.avatarDao.save(newAvatar);
