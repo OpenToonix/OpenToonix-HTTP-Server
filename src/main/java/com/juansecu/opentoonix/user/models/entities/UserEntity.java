@@ -3,7 +3,7 @@ package com.juansecu.opentoonix.user.models.entities;
 /* --- Java modules --- */
 import java.util.Date;
 
-/* --- javax modules --- */
+/* --- Javax modules --- */
 import javax.persistence.*;
 
 /* --- Third-party modules --- */

@@ -10,9 +10,9 @@ import com.juansecu.opentoonix.user.models.entities.UserEntity;
 /**
  * Represents database operations related to users.
  */
-public interface IUserDao extends JpaRepository<UserEntity, String> {
+public interface IUserDao extends JpaRepository<UserEntity, Integer> {
     /**
-     * Find a email being used.
+     * Finds an email being used.
      *
      * @param email The email to find
      * @return String
@@ -21,11 +21,20 @@ public interface IUserDao extends JpaRepository<UserEntity, String> {
     String findEmail(String email);
 
     /**
-     * Find a username being used.
+     * Finds a username being used.
      *
      * @param username The username to find
      * @return String
      */
     @Query("SELECT username FROM Users WHERE username = ?1")
     String findUsername(String username);
+
+    /**
+     * Finds a user by their username.
+     *
+     * @param username
+     * @return UserEntity
+     */
+    @Query("SELECT user FROM Users user WHERE username = ?1")
+    UserEntity findByUsername(String username);
 }
