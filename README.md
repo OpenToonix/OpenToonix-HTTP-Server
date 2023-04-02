@@ -29,9 +29,13 @@ Open-source web server for Toonix World _(mostly known as **Mundo Toonix**)_.
     <br>
 
     **Notes:**
-    - **Note 1:** All necessary environment variables must be set before running the application.
-    - **Note 2:** The database server must support `utf8` charset with `utf8_unicode_ci` collation.
-    - **Note 3:** Never give environment variable values to non-administrator users, since they could hack your server instance.
+    - All necessary environment variables must be set before running the application.
+    - The database server must support `utf8` charset with `utf8_unicode_ci` collation.
+    - Never give environment variable values to non-administrator users, since they could hack your server instance.
+
+## Features
+
+You can check the current state of features [here](https://github.com/Juansecu/OpenToonix-HTTP-Server/wiki/Features).
 
 ## Support
 
