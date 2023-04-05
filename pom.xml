@@ -10,12 +10,13 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
-	<groupId>com.juansecu</groupId>
-	<artifactId>opentoonix</artifactId>
+	<groupId>com.juansecu.opentoonix</groupId>
+	<artifactId>opentoonix-http-server</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<name>OpenToonix HTTP Server</name>
+	<description>HTTP web server emulator for Toonix World</description>
+	<url>https://opentoonix.juansecu.com</url>
 	<packaging>war</packaging>
-	<name>OpenToonix</name>
-	<description>Open-Source web server emulator for Toonix World</description>
 
 	<properties>
 		<java.version>11</java.version>
