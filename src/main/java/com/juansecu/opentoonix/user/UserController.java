@@ -17,7 +17,6 @@ import com.juansecu.opentoonix.user.dtos.responses.LoginResDto;
 /**
  * Contains all endpoints related to users.
  */
-@CrossOrigin(origins = "*")
 @RequestMapping("/user")
 @RestController
 public class UserController {
@@ -46,7 +45,7 @@ public class UserController {
         consumes = "application/x-www-form-urlencoded",
         path = "/login"
     )
-    public LoginResDto postLogin(
+    public LoginResDto login(
         @Valid final LoginReqDto loginReqDto,
         final HttpServletRequest request
     ) {
