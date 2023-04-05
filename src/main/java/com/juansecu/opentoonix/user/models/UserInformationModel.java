@@ -15,41 +15,46 @@ import com.juansecu.opentoonix.user.models.views.UserInformationView;
  */
 @Getter
 public class UserInformationModel {
+    private final int age;
+    @JsonProperty("avatarBody")
+    private final int avatarBodyId;
+    private final int avatarBodyColor;
+    @JsonProperty("avatarCostume")
+    private final int avatarCostumeId;
+    @JsonProperty("avatarEye")
+    private final int avatarEyesId;
+    @JsonProperty("avatarHead")
+    private final int avatarHeadId;
+    private final int avatarHeadColor;
+    private final String avatarImagePath;
+    @JsonProperty("avatarMouth")
+    private final int avatarMouthId;
+    private final int avatarSkinColor;
+    private final int credits;
+    private final EUserGender gender;
+    @JsonProperty("cookieUser")
+    private final UserCookieModel userCookie;
     @JsonProperty("id")
     private final int userId;
     private final String username;
-    private final EUserGender gender;
-    private final int age;
-    private final int credits;
-    private final int avatarBody;
-    private final int avatarBodyColor;
-    private final int avatarCostume;
-    private final int avatarEye;
-    private final int avatarHead;
-    private final int avatarHeadColor;
-    private final String avatarImagePath;
-    private final int avatarMouth;
-    private final int avatarSkinColor;
-    @JsonProperty("cookieUser")
-    private final UserCookieModel userCookie;
 
     private final String registerFeedCode = "la";
 
-    public UserInformationModel(final UserInformationView userInformationView, final UserCookieModel cookieUser) {
-        this.userId = userInformationView.getUserId();
-        this.username = userInformationView.getUsername();
-        this.gender = userInformationView.getGender();
-        this.age = userInformationView.getAge();
-        this.credits = userInformationView.getCredits();
-        this.avatarBody = userInformationView.getAvatarBody();
-        this.avatarBodyColor = userInformationView.getAvatarBodyColor();
-        this.avatarCostume = userInformationView.getAvatarCostume();
-        this.avatarEye = userInformationView.getAvatarEyes();
-        this.avatarHead = userInformationView.getAvatarHead();
-        this.avatarHeadColor = userInformationView.getAvatarHeadColor();
-        this.avatarImagePath = userInformationView.getAvatarImagePath();
-        this.avatarMouth = userInformationView.getAvatarMouth();
-        this.avatarSkinColor = userInformationView.getAvatarSkinColor();
-        this.userCookie = cookieUser;
+    public UserInformationModel(final UserInformationView userInformation, final UserCookieModel userCookie) {
+        this.age = userInformation.getAge();
+        this.avatarBodyId = userInformation.getAvatarBody();
+        this.avatarBodyColor = userInformation.getAvatarBodyColor();
+        this.avatarCostumeId = userInformation.getAvatarCostume();
+        this.avatarEyesId = userInformation.getAvatarEyes();
+        this.avatarHeadId = userInformation.getAvatarHead();
+        this.avatarHeadColor = userInformation.getAvatarHeadColor();
+        this.avatarImagePath = userInformation.getAvatarImagePath();
+        this.avatarMouthId = userInformation.getAvatarMouth();
+        this.avatarSkinColor = userInformation.getAvatarSkinColor();
+        this.credits = userInformation.getCredits();
+        this.gender = userInformation.getGender();
+        this.userCookie = userCookie;
+        this.userId = userInformation.getUserId();
+        this.username = userInformation.getUsername();
     }
 }

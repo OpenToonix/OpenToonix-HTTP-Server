@@ -15,13 +15,28 @@ import com.juansecu.opentoonix.user.enums.EUserGender;
  */
 @Data
 public class NewUserReqDto {
-    @NotBlank(message = "Username cannot be empty")
-    @Size(
-        max = 12,
-        message = "Username must be a length between 4 and 12 characters",
-        min = 4
+    @Min(
+        message = "Your age must be greater than or equal to 13",
+        value = 13
     )
-    private String username;
+    @NotBlank(message = "Age cannot be empty")
+    @Pattern(
+        message = "Invalid age",
+        regexp = "^\\d\\d$"
+    )
+    private String age;
+    @NotBlank(message = "Avatar information cannot be empty")
+    private String avatar;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private String birthdate;
+    @Email(message = "Invalid email")
+    @NotBlank(message = "Email cannot be empty")
+    @Size(
+        max = 75,
+        message = "Email length must be less than or equal to 75"
+    )
+    private String email;
+    private EUserGender gender;
     @NotBlank(message = "Password cannot be empty")
     @Pattern(
         flags = {Pattern.Flag.CASE_INSENSITIVE},
@@ -34,26 +49,11 @@ public class NewUserReqDto {
         min = 6
     )
     private String password;
-    private EUserGender gender;
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private String birthdate;
-    @Min(
-        message = "Your age must be greater than or equal to 13",
-        value = 13
-    )
-    @NotBlank(message = "Age cannot be empty")
-    @Pattern(
-        message = "Invalid age",
-        regexp = "^\\d\\d$"
-    )
-    private String age;
-    @Email(message = "Invalid email")
-    @NotBlank(message = "Email cannot be empty")
+    @NotBlank(message = "Username cannot be empty")
     @Size(
-        max = 75,
-        message = "Email length must be less than or equal to 75"
+        max = 12,
+        message = "Username must be a length between 4 and 12 characters",
+        min = 4
     )
-    private String email;
-    @NotBlank(message = "Avatar information cannot be empty")
-    private String avatar;
+    private String username;
 }

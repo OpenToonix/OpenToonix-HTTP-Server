@@ -118,8 +118,8 @@ public class UserService {
 
         if (user == null) {
             return new LoginResDto(
-                false,
                 ELoggingInError.USER_NOT_EXISTS,
+                false,
                 null
             );
         }
@@ -131,8 +131,8 @@ public class UserService {
 
         if (!passwordMatches) {
             return new LoginResDto(
-                false,
                 ELoggingInError.USER_WRONG_PASSWORD,
+                false,
                 null
             );
         }
@@ -141,8 +141,8 @@ public class UserService {
 
         return userInformation != null
             ? new LoginResDto(
-                true,
                 null,
+                true,
                 new UserInformationModel(
                     userInformation,
                     new UserCookieModel(
@@ -157,8 +157,8 @@ public class UserService {
                 )
             )
             : new LoginResDto(
-                false,
                 ELoggingInError.USER_DISABLED,
+                false,
                 null
             );
     }

@@ -1,8 +1,9 @@
 package com.juansecu.opentoonix.user.dtos.responses;
 
 /* --- Third-party modules --- */
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 
 /* --- Application modules --- */
 import com.juansecu.opentoonix.user.enums.ELoggingInError;
@@ -13,9 +14,10 @@ import com.juansecu.opentoonix.user.models.UserInformationModel;
  * when the user signs in.
  */
 @AllArgsConstructor
-@Data
+@Getter
 public class LoginResDto {
-    private boolean success;
-    private ELoggingInError error;
-    private UserInformationModel principal;
+    private final ELoggingInError error;
+    private final boolean success;
+    @JsonProperty("principal")
+    private final UserInformationModel userInformation;
 }
