@@ -11,7 +11,7 @@ import com.auth0.jwt.algorithms.Algorithm;
  * Contains all related tasks to JSON Web Tokens.
  */
 public class JwtAdapter {
-    public static final Algorithm JWT_ALGORITHM = Algorithm.HMAC256("${JWT_SECRET}");
+    private static final Algorithm JWT_ALGORITHM = Algorithm.HMAC256("${JWT_SECRET}");
 
     /**
      * Generates and Signs a JSON Web Token with the given information.

@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 
 /* --- Third-party modules --- */
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -39,9 +39,9 @@ public class UserService {
     @Autowired
     private AvatarService avatarService;
     @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
-    @Autowired
     private JwtAdapter jwtAdapter;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     @Autowired
     private IUserDao userDao;
     @Autowired
@@ -70,7 +70,7 @@ public class UserService {
                 newUser.setAge(Integer.parseInt(newUserReqDto.getAge()));
                 newUser.setBirthdate(new SimpleDateFormat("yyyy-MM-dd").parse(newUserReqDto.getBirthdate()));
                 newUser.setGender(newUserReqDto.getGender());
-                newUser.setPassword(this.bCryptPasswordEncoder.encode(newUserReqDto.getPassword()));
+                newUser.setPassword(this.passwordEncoder.encode(newUserReqDto.getPassword()));
 
                 newUser = this.userDao.save(newUser);
 
@@ -89,15 +89,15 @@ public class UserService {
      * @param username The username to verify
      * @return IsValidUsernameResDto
      */
-    public IsValidUsernameResDto isValidUsername(String username) {
-        IsValidUsernameResDto isValidUsernameResDto = new IsValidUsernameResDto();
-        String userName = this.userDao.findUsername(username.toLowerCase());
-        boolean isUsernameInBlackList = this.usernameBlacklistService.isUsernameInBlacklist(username.toLowerCase());
+    public IsValidUsernameResDto isValidUsername(final String username) {
+        final String existentUsername = this.userDao.findUsername(username.toLowerCase());
+        final IsValidUsernameResDto isValidUsernameResDto = new IsValidUsernameResDto();
+        final boolean isUsernameInBlackList = this.usernameBlacklistService.isUsernameInBlacklist(username.toLowerCase());
 
-        if (userName == null && !isUsernameInBlackList) {
+        if (existentUsername == null && !isUsernameInBlackList) {
             isValidUsernameResDto.setExistsUsername(false);
             isValidUsernameResDto.setUsernameInBlackList(false);
-        } else if (userName != null) isValidUsernameResDto.setExistsUsername(true);
+        } else if (existentUsername != null) isValidUsernameResDto.setExistsUsername(true);
         else if (isUsernameInBlackList) isValidUsernameResDto.setUsernameInBlackList(true);
 
         return isValidUsernameResDto;
@@ -111,42 +111,25 @@ public class UserService {
      * @return LoginResDto
      */
     public LoginResDto login(final LoginReqDto loginReqDto, final HttpServletRequest request) {
+        boolean passwordMatches;
+        UserInformationView userInformation;
+
         final UserEntity user = this.userDao.findByUsername(loginReqDto.getUsername());
 
-        if (user != null) {
-            final boolean passwordMatches = bCryptPasswordEncoder.matches(
-                loginReqDto.getPassword(),
-                user.getPassword()
+        if (user == null) {
+            return new LoginResDto(
+                false,
+                ELoggingInError.USER_NOT_EXISTS,
+                null
             );
+        }
 
-            if (passwordMatches) {
-                final UserInformationView userInformation = this.userInformationDao
-                    .findByUsername(user.getUsername());
+        passwordMatches = passwordEncoder.matches(
+            loginReqDto.getPassword(),
+            user.getPassword()
+        );
 
-                return userInformation != null
-                    ? new LoginResDto(
-                        true,
-                        null,
-                        new UserInformationModel(
-                            userInformation,
-                            new UserCookieModel(
-                                "token",
-                                "/",
-                                this.jwtAdapter.generateJsonWebToken(
-                                    userInformation.getUsername(),
-                                    request.getRequestURL().toString(),
-                                    new Date(new Date().getTime() + 30 * 60 * 1000)
-                                )
-                            )
-                        )
-                    )
-                    : new LoginResDto(
-                            false,
-                        ELoggingInError.USER_DISABLED,
-                        null
-                    );
-            }
-
+        if (!passwordMatches) {
             return new LoginResDto(
                 false,
                 ELoggingInError.USER_WRONG_PASSWORD,
@@ -154,10 +137,29 @@ public class UserService {
             );
         }
 
-        return new LoginResDto(
-            false,
-            ELoggingInError.USER_NOT_EXISTS,
-            null
-        );
+        userInformation = this.userInformationDao.findByUsername(user.getUsername());
+
+        return userInformation != null
+            ? new LoginResDto(
+                true,
+                null,
+                new UserInformationModel(
+                    userInformation,
+                    new UserCookieModel(
+                        "token",
+                        "/",
+                        this.jwtAdapter.generateJsonWebToken(
+                            userInformation.getUsername(),
+                            request.getRequestURL().toString(),
+                            new Date(new Date().getTime() + 30 * 60 * 1000)
+                        )
+                    )
+                )
+            )
+            : new LoginResDto(
+                false,
+                ELoggingInError.USER_DISABLED,
+                null
+            );
     }
 }
