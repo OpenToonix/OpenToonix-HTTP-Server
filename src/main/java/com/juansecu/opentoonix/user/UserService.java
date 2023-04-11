@@ -18,6 +18,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import com.juansecu.opentoonix.avatar.AvatarService;
 import com.juansecu.opentoonix.avatar.dtos.requests.NewAvatarReqDto;
 import com.juansecu.opentoonix.shared.adapters.JwtAdapter;
+import com.juansecu.opentoonix.shared.providers.HostDetailsProvider;
 import com.juansecu.opentoonix.user.daos.IUserDao;
 import com.juansecu.opentoonix.user.daos.IUserInformationDao;
 import com.juansecu.opentoonix.user.dtos.requests.LoginReqDto;
@@ -38,6 +39,8 @@ import com.juansecu.opentoonix.usernameblacklist.UsernameBlacklistService;
 public class UserService {
     @Autowired
     private AvatarService avatarService;
+    @Autowired
+    private HostDetailsProvider hostDetailsProvider;
     @Autowired
     private JwtAdapter jwtAdapter;
     @Autowired
@@ -153,7 +156,8 @@ public class UserService {
                             request.getRequestURL().toString(),
                             new Date(new Date().getTime() + 30 * 60 * 1000)
                         )
-                    )
+                    ),
+                    this.hostDetailsProvider.getHostPath()
                 )
             )
             : new LoginResDto(

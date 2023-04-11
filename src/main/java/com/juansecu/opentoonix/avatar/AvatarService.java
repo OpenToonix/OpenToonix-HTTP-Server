@@ -5,6 +5,9 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Base64;
 import java.util.UUID;
 
@@ -12,7 +15,12 @@ import java.util.UUID;
 import javax.imageio.ImageIO;
 
 /* --- Third-party modules --- */
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 /* --- Application modules --- */
@@ -26,6 +34,12 @@ import com.juansecu.opentoonix.user.models.entities.UserEntity;
  */
 @Service
 public class AvatarService {
+    private static final String AVATAR_FILE_FORMAT_SUFFIX = ".png";
+    private static final Logger CONSOLE_LOGGER = LogManager.getLogger(AvatarService.class);
+
+    @Value("${avatar.storage-folder-path}")
+    private String avatarStorageFolderPath;
+
     @Autowired
     private IAvatarDao avatarDao;
 
@@ -42,10 +56,20 @@ public class AvatarService {
         UUID uuid = UUID.randomUUID();
         BufferedImage image;
         byte[] imageData = Base64.getDecoder().decode(newAvatarReqDto.getImageData());
-        File outputFile = new File("src/main/resources/public/images/toonix/" + uuid + ".png");
+        File outputFile = Files.createFile(
+            Path.of(
+                this.avatarStorageFolderPath,
+                uuid + AvatarService.AVATAR_FILE_FORMAT_SUFFIX
+            )
+        )
+            .toFile();
 
         image = ImageIO.read(new ByteArrayInputStream(imageData));
-        ImageIO.write(image, "png", outputFile);
+        ImageIO.write(
+            image,
+            AvatarService.AVATAR_FILE_FORMAT_SUFFIX.replace(".", ""),
+            outputFile
+        );
 
         newAvatar.setCostume(newAvatarReqDto.getCostume());
         newAvatar.setSkinColor(newAvatarReqDto.getSkinColor());
@@ -55,9 +79,35 @@ public class AvatarService {
         newAvatar.setMouth(newAvatarReqDto.getMouth());
         newAvatar.setBody(newAvatarReqDto.getBody());
         newAvatar.setBodyColor(newAvatarReqDto.getBodyColor());
-        newAvatar.setImagePath("/images/toonix/" + uuid + ".png");
+        newAvatar.setImagePath("/avatar/" + uuid);
         newAvatar.setUserId(user);
 
         this.avatarDao.save(newAvatar);
+    }
+
+    public ResponseEntity<byte[]> getAvatarImage(final UUID avatarId) {
+        try(
+            final InputStream file = Files.newInputStream(
+                Path.of(
+                    this.avatarStorageFolderPath,
+                    avatarId.toString() + AvatarService.AVATAR_FILE_FORMAT_SUFFIX
+                )
+            )
+        ) {
+            final byte[] fileBytes = file.readAllBytes();
+
+            return new ResponseEntity<>(
+                fileBytes,
+                HttpStatus.OK
+            );
+        } catch (IOException ioException) {
+            AvatarService.CONSOLE_LOGGER.error(
+                String.format(
+                    "There was an error while retrieving the requested user avatar:%n%s",
+                    ioException
+                )
+            );
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

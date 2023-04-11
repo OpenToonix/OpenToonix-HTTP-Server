@@ -1,6 +1,7 @@
 package com.juansecu.opentoonix.user.models;
 
 /* --- Third-party modules --- */
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
@@ -32,6 +33,8 @@ public class UserInformationModel {
     private final int avatarSkinColor;
     private final int credits;
     private final EUserGender gender;
+    @JsonIgnore
+    private final String hostPath;
     @JsonProperty("cookieUser")
     private final UserCookieModel userCookie;
     @JsonProperty("id")
@@ -40,7 +43,11 @@ public class UserInformationModel {
 
     private final String registerFeedCode = "la";
 
-    public UserInformationModel(final UserInformationView userInformation, final UserCookieModel userCookie) {
+    public UserInformationModel(
+        final UserInformationView userInformation,
+        final UserCookieModel userCookie,
+        final String hostPath
+    ) {
         this.age = userInformation.getAge();
         this.avatarBodyId = userInformation.getAvatarBody();
         this.avatarBodyColor = userInformation.getAvatarBodyColor();
@@ -53,8 +60,13 @@ public class UserInformationModel {
         this.avatarSkinColor = userInformation.getAvatarSkinColor();
         this.credits = userInformation.getCredits();
         this.gender = userInformation.getGender();
+        this.hostPath = hostPath;
         this.userCookie = userCookie;
         this.userId = userInformation.getUserId();
         this.username = userInformation.getUsername();
+    }
+
+    public String getAvatarImagePath() {
+        return this.hostPath + this.avatarImagePath;
     }
 }
