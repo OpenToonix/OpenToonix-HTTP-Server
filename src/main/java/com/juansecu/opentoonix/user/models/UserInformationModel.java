@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 /* --- Application modules --- */
+import com.juansecu.opentoonix.shared.models.CookieModel;
 import com.juansecu.opentoonix.user.enums.EUserGender;
 import com.juansecu.opentoonix.user.models.views.UserInformationView;
 
@@ -36,7 +37,7 @@ public class UserInformationModel {
     @JsonIgnore
     private final String hostPath;
     @JsonProperty("cookieUser")
-    private final UserCookieModel userCookie;
+    private final CookieModel userCookie;
     @JsonProperty("id")
     private final int userId;
     private final String username;
@@ -45,7 +46,7 @@ public class UserInformationModel {
 
     public UserInformationModel(
         final UserInformationView userInformation,
-        final UserCookieModel userCookie,
+        final CookieModel userAuthCookie,
         final String hostPath
     ) {
         this.age = userInformation.getAge();
@@ -61,7 +62,7 @@ public class UserInformationModel {
         this.credits = userInformation.getCredits();
         this.gender = userInformation.getGender();
         this.hostPath = hostPath;
-        this.userCookie = userCookie;
+        this.userCookie = userAuthCookie;
         this.userId = userInformation.getUserId();
         this.username = userInformation.getUsername();
     }

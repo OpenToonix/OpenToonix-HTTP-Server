@@ -2,12 +2,13 @@ package com.juansecu.opentoonix.user;
 
 /* --- Java modules --- */
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /* --- Javax modules --- */
 import javax.servlet.http.HttpServletRequest;
 
 /* --- Third-party modules --- */
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import com.juansecu.opentoonix.avatar.AvatarService;
 import com.juansecu.opentoonix.avatar.dtos.requests.NewAvatarReqDto;
 import com.juansecu.opentoonix.shared.adapters.JwtAdapter;
+import com.juansecu.opentoonix.shared.models.CookieModel;
 import com.juansecu.opentoonix.shared.providers.HostDetailsProvider;
 import com.juansecu.opentoonix.user.daos.IUserDao;
 import com.juansecu.opentoonix.user.daos.IUserInformationDao;
@@ -26,17 +28,17 @@ import com.juansecu.opentoonix.user.dtos.requests.NewUserReqDto;
 import com.juansecu.opentoonix.user.dtos.responses.IsValidUsernameResDto;
 import com.juansecu.opentoonix.user.dtos.responses.LoginResDto;
 import com.juansecu.opentoonix.user.enums.ELoggingInError;
-import com.juansecu.opentoonix.user.models.UserCookieModel;
 import com.juansecu.opentoonix.user.models.UserInformationModel;
 import com.juansecu.opentoonix.user.models.entities.UserEntity;
 import com.juansecu.opentoonix.user.models.views.UserInformationView;
 import com.juansecu.opentoonix.usernameblacklist.UsernameBlacklistService;
 
-/**
- * Contains all data operations related to users.
- */
 @Service
 public class UserService {
+    public static final String USER_AUTHENTICATION_COOKIE_NAME = "AUTH_TOKEN";
+
+    private static final Logger CONSOLE_LOGGER = LogManager.getLogger(UserService.class);
+
     @Autowired
     private AvatarService avatarService;
     @Autowired
@@ -52,35 +54,42 @@ public class UserService {
     @Autowired
     private UsernameBlacklistService usernameBlacklistService;
 
-    /**
-     * Creates a new user and their avatar.
-     *
-     * If the creation of avatar fails, the user data won't be saved.
-     *
-     * @param newUserReqDto New user's data
-     */
     @Transactional
     public void createUser(NewUserReqDto newUserReqDto) {
-        String userEmail = this.userDao.findEmail(newUserReqDto.getEmail().toLowerCase());
+        UserService.CONSOLE_LOGGER.info("Initializing register service...");
+
+        final String userEmail = this.userDao.findEmail(newUserReqDto.getEmail().toLowerCase());
 
         if (userEmail == null) {
-            NewAvatarReqDto newAvatarReqDto = new NewAvatarReqDto().getNewAvatarReqDtoFromString(newUserReqDto.getAvatar());
             UserEntity newUser = new UserEntity();
+
+            final NewAvatarReqDto newAvatarReqDto = new NewAvatarReqDto().getNewAvatarReqDtoFromString(
+                newUserReqDto.getAvatar()
+            );
 
             try {
                 newUser.setUsername(newUserReqDto.getUsername().toLowerCase());
                 newUser.setEmail(newUserReqDto.getEmail().toLowerCase());
                 newUser.setAge(Integer.parseInt(newUserReqDto.getAge()));
-                newUser.setBirthdate(new SimpleDateFormat("yyyy-MM-dd").parse(newUserReqDto.getBirthdate()));
+                newUser.setBirthdate(
+                    new SimpleDateFormat("yyyy-MM-dd").parse(newUserReqDto.getBirthdate())
+                );
                 newUser.setGender(newUserReqDto.getGender());
                 newUser.setPassword(this.passwordEncoder.encode(newUserReqDto.getPassword()));
 
                 newUser = this.userDao.save(newUser);
 
                 this.avatarService.createAvatar(newAvatarReqDto, newUser);
+
+                UserService.CONSOLE_LOGGER.info("User created successfully");
             } catch (Exception exception) {
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                exception.printStackTrace();
+                UserService.CONSOLE_LOGGER.error(
+                    String.format(
+                        "Error while trying to register new user:%n%s",
+                        exception
+                    )
+                );;
             }
         }
     }
@@ -106,20 +115,17 @@ public class UserService {
         return isValidUsernameResDto;
     }
 
-    /**
-     * Signs in an existent user.
-     *
-     * @param loginReqDto The login information
-     * @param request The request object
-     * @return LoginResDto
-     */
     public LoginResDto login(final LoginReqDto loginReqDto, final HttpServletRequest request) {
+        UserService.CONSOLE_LOGGER.info("Initializing login service...");
+
         boolean passwordMatches;
         UserInformationView userInformation;
 
         final UserEntity user = this.userDao.findByUsername(loginReqDto.getUsername());
 
         if (user == null) {
+            UserService.CONSOLE_LOGGER.error("User does not exist");
+
             return new LoginResDto(
                 ELoggingInError.USER_NOT_EXISTS,
                 false,
@@ -133,6 +139,8 @@ public class UserService {
         );
 
         if (!passwordMatches) {
+            UserService.CONSOLE_LOGGER.error("User password is incorrect");
+
             return new LoginResDto(
                 ELoggingInError.USER_WRONG_PASSWORD,
                 false,
@@ -148,13 +156,12 @@ public class UserService {
                 true,
                 new UserInformationModel(
                     userInformation,
-                    new UserCookieModel(
-                        "token",
+                    new CookieModel(
+                        UserService.USER_AUTHENTICATION_COOKIE_NAME,
                         "/",
                         this.jwtAdapter.generateJsonWebToken(
                             userInformation.getUsername(),
-                            request.getRequestURL().toString(),
-                            new Date(new Date().getTime() + 30 * 60 * 1000)
+                            request.getRequestURL().toString()
                         )
                     ),
                     this.hostDetailsProvider.getHostPath()
