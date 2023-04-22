@@ -17,20 +17,20 @@ Open-source web server for Toonix World _(mostly known as **Mundo Toonix**)_.
 
 - **Environment variables**
 
-    | Variable                     | Description                                        | Default | Example                             | Required |
-    | ---------------------------- | -------------------------------------------------- | ------- | ----------------------------------- | -------- |
-    | `AVATAR_STORAGE_FOLDER_PATH` | The path where user avatars will be stored         | None    | `C:/Users/usr/Documents/OpenToonix` | Yes      |
-    | `DATABASE_HOST`              | The host where the database server is running      | None    | `localhost`                         | Yes      |
-    | `DATABASE_NAME`              | The name of the database                           | None    | `opentoonix_database`               | Yes      |
-    | `DATABASE_PASSWORD`          | The password of the user who owns the database     | None    | `openT00nix_Database_paSsW0rd`      | Yes      |
-    | `DATABASE_PORT`              | The port where the database server is running      | None    | `3306`                              | Yes      |
-    | `DATABASE_USERNAME`          | The name of the user who owns the database         | None    | `opentoonix_user`                   | Yes      |
-    | `JWT_SECRET`                 | The secret used to sign and verify JSON Web Tokens | None    | `jWT_S3cR3T`                        | Yes      |
+    | Variable                     | Description                                        | Example                             |
+    | ---------------------------- | -------------------------------------------------- | ----------------------------------- |
+    | `AVATAR_STORAGE_FOLDER_PATH` | The path where user avatars will be stored         | `C:/Users/usr/Documents/OpenToonix` |
+    | `DATABASE_HOST`              | The host where the database server is running      | `localhost`                         |
+    | `DATABASE_NAME`              | The name of the database                           | `opentoonix_database`               |
+    | `DATABASE_PASSWORD`          | The password of the user who owns the database     | `openT00nix_Database_paSsW0rd`      |
+    | `DATABASE_PORT`              | The port where the database server is running      | `3306`                              |
+    | `DATABASE_USERNAME`          | The name of the user who owns the database         | `opentoonix_user`                   |
+    | `JWT_SECRET`                 | The secret used to sign and verify JSON Web Tokens | `jWT_S3cR3T`                        |
 
     <br>
 
     **Notes:**
-    - All necessary environment variables must be set before running the application.
+    - All environment variables must be set before running the application.
     - The database server must support `utf8` charset with `utf8_unicode_ci` collation.
     - Never give environment variable values to non-administrator users, since they could hack your server instance.
 
