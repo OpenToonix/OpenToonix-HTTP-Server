@@ -36,7 +36,7 @@ Open-source web server for Toonix World _(mostly known as **Mundo Toonix**)_.
 
 ## Features
 
-You can check the current state of features [here](https://github.com/Juansecu/OpenToonix-HTTP-Server/wiki/Features).
+You can check the current state of features [here](https://github.com/OpenToonix/OpenToonix-HTTP-Server/wiki/Features).
 
 ## Support
 
