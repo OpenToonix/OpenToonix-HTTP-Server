@@ -39,8 +39,6 @@ public class JwtAdapter {
             final DecodedJWT decodedJwt = JWT.decode(token);
             final Date today = new Date();
 
-            JwtAdapter.CONSOLE_LOGGER.info(decodedJwt.getExpiresAt());
-
             if (decodedJwt.getExpiresAt().before(today)) {
                 JwtAdapter.CONSOLE_LOGGER.error("JSON Web Token is already expired");
                 return false;
