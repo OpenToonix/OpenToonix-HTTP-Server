@@ -7,14 +7,12 @@
 
 </div>
 
-Open-source web server for Toonix World _(mostly known as **Mundo Toonix**)_.
+HTTP (Hypertext Transfer Protocol) server for Toonix World _(mostly known as **Mundo Toonix**)_.
 
 ## Requirements
 
-- **Java** - Version 11
-
-- **Database engine** - MySQL version 8.x
-
+- **Java -** Version 11
+- **Database engine -** MySQL version 8.x
 - **Environment variables**
 
     | Variable                     | Description                                        | Example                             |
