@@ -4,9 +4,9 @@ public enum EUserGender {
     FEMALE("FEMALE"),
     MALE("MALE");
 
-    public final String GENDER;
+    public final String gender;
 
-    EUserGender(String gender) {
-        this.GENDER = gender;
+    EUserGender(final String gender) {
+        this.gender = gender;
     }
 }

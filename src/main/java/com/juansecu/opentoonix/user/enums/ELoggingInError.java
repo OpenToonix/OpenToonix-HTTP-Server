@@ -5,9 +5,9 @@ public enum ELoggingInError {
     USER_NOT_EXISTS("USER_NOT_EXISTS"),
     USER_WRONG_PASSWORD("USER_WRONG_PASSWORD");
 
-    public final String ERROR_MESSAGE;
+    public final String errorMessage;
 
     ELoggingInError(final String errorMessage) {
-        this.ERROR_MESSAGE = errorMessage;
+        this.errorMessage = errorMessage;
     }
 }
