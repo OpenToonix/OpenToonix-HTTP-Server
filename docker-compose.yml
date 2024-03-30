@@ -31,4 +31,3 @@ services:
       JWT_SECRET: ${JWT_SECRET}
     volumes:
       - ${AVATAR_STORAGE_FOLDER_PATH}:/app/avatars
-      - ${STATIC_FILES_PATH}:/app/static_assets
