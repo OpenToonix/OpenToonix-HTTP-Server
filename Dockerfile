@@ -5,7 +5,7 @@ RUN mvn dependency:go-offline -B
 COPY src ./src
 RUN mvn package -DskipTests
 
-FROM tomcat:9.0.54-jdk11-openjdk-slim
+FROM tomcat:9.0.54-jdk11-openjdk-slim AS deploy
 # Changing the name also changges the context path, so the application will be available at /api
 COPY --from=build /app/target/*.war /usr/local/tomcat/webapps/api.war
 EXPOSE 8080

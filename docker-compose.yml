@@ -11,7 +11,7 @@ services:
       MYSQL_USER: ${DATABASE_USERNAME}
       MYSQL_PASSWORD: ${DATABASE_PASSWORD}
     volumes:
-      - ${DB_DATA_PATH}:/var/lib/mysql
+      - /c/Users/usr/OpenToonix/DB:/var/lib/mysql
 
   backend:
     build:
@@ -30,4 +30,6 @@ services:
       DATABASE_USERNAME: ${DATABASE_USERNAME}
       JWT_SECRET: ${JWT_SECRET}
     volumes:
-      - ${AVATAR_STORAGE_FOLDER_PATH}:/app/avatars
+      - /c/Users/usr/OpenToonix/Avatar:/app/avatar
+
+
