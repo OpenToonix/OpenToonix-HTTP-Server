@@ -6,6 +6,6 @@ COPY src ./src
 RUN mvn package -DskipTests
 
 FROM openjdk:11-jre-slim AS deploy
-COPY --from=build /app/target/*.jar /app/app.jar
+COPY --from=build /app/target/*.war /app/app.war
 EXPOSE 8080
-CMD ["java", "-jar", "/app/app.jar"]
+CMD ["java", "-jar", "/app/app.war"]

@@ -16,7 +16,7 @@
 	<name>OpenToonix HTTP Server</name>
 	<description>HTTP web server emulator for Toonix World</description>
 	<url>https://opentoonix.juansecu.com</url>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 
 	<properties>
 		<java.version>11</java.version>
