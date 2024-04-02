@@ -6,8 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 /* --- Application modules --- */
 import com.juansecu.opentoonix.user.models.entities.UserEntity;
 
-public interface VerificationTokenRepository extends JpaRepository<VerificationToken,Long> {
-    VerificationToken findByToken(String token);
+public interface VerificationTokenRepository extends JpaRepository<VerificationTokenEntity,Long> {
+    VerificationTokenEntity findByToken(String token);
 
-    VerificationToken findByUser(UserEntity user);
+    VerificationTokenEntity findByUser(UserEntity user);
 }

@@ -15,22 +15,27 @@ HTTP (Hypertext Transfer Protocol) server for Toonix World _(mostly known as **M
 - **Database engine -** MySQL version 8.x
 - **Environment variables**
 
-    | Variable                     | Description                                        | Example                             |
-    | ---------------------------- | -------------------------------------------------- | ----------------------------------- |
-    | `AVATAR_STORAGE_FOLDER_PATH` | The path where user avatars will be stored         | `C:/Users/usr/Documents/OpenToonix` |
-    | `DATABASE_HOST`              | The host where the database server is running      | `localhost`                         |
-    | `DATABASE_NAME`              | The name of the database                           | `opentoonix_database`               |
-    | `DATABASE_PASSWORD`          | The password of the user who owns the database     | `openT00nix_Database_paSsW0rd`      |
-    | `DATABASE_PORT`              | The port where the database server is running      | `3306`                              |
-    | `DATABASE_USERNAME`          | The name of the user who owns the database         | `opentoonix_user`                   |
-    | `JWT_SECRET`                 | The secret used to sign and verify JSON Web Tokens | `jWT_S3cR3T`                        |
+| Variable                      | Description                                               | Example                             |
+|-------------------------------|-----------------------------------------------------------|-------------------------------------|
+| `ACCOUNTS_FROM_EMAIL_ADDRESS` | The email address that will send account-related emails   | `OpenToonix@gmail.com`              |
+| `AVATAR_STORAGE_FOLDER_PATH`  | The path where user avatars will be stored                | `C:/Users/usr/Documents/OpenToonix` |
+| `DATABASE_HOST`               | The host where the database server is running             | `localhost`                         |
+| `DATABASE_NAME`               | The name of the database                                  | `opentoonix_database`               |
+| `DATABASE_PASSWORD`           | The password of the user who owns the database            | `openT00nix_Database_paSsW0rd`      |
+| `DATABASE_PORT`               | The port where the database server is running             | `3306`                              |
+| `DATABASE_USERNAME`           | The name of the user who owns the database                | `opentoonix_user`                   |
+| `JWT_SECRET`                  | The secret used to sign and verify JSON Web Tokens        | `jWT_S3cR3T`                        |
+| `MAIL_HOST`                   | The host of the mail server                               | `smtp.gmail.com`                    |
+| `MAIL_PORT`                   | The mail port for SMTP                                    | `587`                               |
+| `MAIL_USERNAME`               | The username used to authenticate against the SMTP server | `apikey`                            |
+| `MAIL_PASSWORD`               | The password of the mail account                          | `openT00nix_Mail_paSsW0rd`          |
+| `MYSQL_ROOT_PASSWORD`         | The password of the database root user                    | `openT00nix_Database_paSsW0rd`      |
+ <br>
 
-    <br>
-
-    **Notes:**
-    - All environment variables must be set before running the application.
-    - The database server must support `utf8` charset with `utf8_unicode_ci` collation.
-    - Never give environment variable values to non-administrator users, since they could hack your server instance.
+   **Notes:**
+   - All environment variables must be set before running the application.
+   - The database server must support `utf8` charset with `utf8_unicode_ci` collation.
+   - Never give environment variable values to non-administrator users, since they could hack your server instance.
 
 ## Features
 

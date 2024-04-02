@@ -1,8 +1,6 @@
 package com.juansecu.opentoonix.mail;
 
 /* --- Java modules --- */
-import java.sql.Timestamp;
-import java.util.Calendar;
 import java.util.Date;
 
 /* --- Javax modules --- */
@@ -10,17 +8,24 @@ import javax.persistence.*;
 
 /* --- Third-party modules --- */
 import lombok.Data;
+import org.hibernate.annotations.GenericGenerator;
+
 
 /* --- Application modules --- */
 import com.juansecu.opentoonix.user.models.entities.UserEntity;
+import com.juansecu.opentoonix.shared.generators.NumericIdGenerator;
 
-@Entity
+@Entity(name = "Verification_tokens")
 @Data
-public class VerificationToken {
+public class VerificationTokenEntity {
     private static final int EXPIRATION = 60 * 24;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(generator = NumericIdGenerator.GENERATOR_NAME)
+    @GenericGenerator(
+            name = NumericIdGenerator.GENERATOR_NAME,
+            strategy = "com.juansecu.opentoonix.shared.generators.NumericIdGenerator"
+    )
     private Long id;
     private String token;
     @OneToOne (targetEntity = UserEntity.class, fetch = FetchType.EAGER)
@@ -28,10 +33,4 @@ public class VerificationToken {
     private UserEntity user;
     private Date expiryDate;
 
-    public Date calculateExpiryDate() {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Timestamp(cal.getTime().getTime()));
-        cal.add(Calendar.MINUTE, EXPIRATION);
-        return new Date(cal.getTime().getTime());
-    }
 }

@@ -2,19 +2,25 @@ package com.juansecu.opentoonix.user;
 
 /* --- Java modules --- */
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
 /* --- Javax modules --- */
 import javax.servlet.http.HttpServletRequest;
 
 /* --- Third-party modules --- */
+import com.juansecu.opentoonix.shared.utils.mail.TokenExpiryCalculator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.MessageSource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.ui.Model;
+import org.springframework.web.context.request.WebRequest;
 
 /* --- Application modules --- */
 import com.juansecu.opentoonix.avatar.AvatarService;
@@ -34,11 +40,11 @@ import com.juansecu.opentoonix.user.models.entities.UserEntity;
 import com.juansecu.opentoonix.user.models.views.UserInformationView;
 import com.juansecu.opentoonix.usernameblacklist.UsernameBlacklistService;
 import com.juansecu.opentoonix.mail.OnRegistrationCompleteEvent;
-import com.juansecu.opentoonix.mail.VerificationToken;
+import com.juansecu.opentoonix.mail.VerificationTokenEntity;
 import com.juansecu.opentoonix.mail.VerificationTokenRepository;
 
 @Service
-public class    UserService {
+public class UserService {
     public static final String USER_AUTHENTICATION_COOKIE_NAME = "AUTH_TOKEN";
 
     private static final Logger CONSOLE_LOGGER = LogManager.getLogger(UserService.class);
@@ -61,6 +67,10 @@ public class    UserService {
     ApplicationEventPublisher eventPublisher;
     @Autowired
     private VerificationTokenRepository tokenRepository;
+    @Autowired
+    private TokenExpiryCalculator tokenExpiryCalculator;
+    @Autowired
+    private MessageSource messages;
 
     @Transactional
     public void createUser(NewUserReqDto newUserReqDto) {
@@ -84,7 +94,7 @@ public class    UserService {
                 );
                 newUser.setGender(newUserReqDto.getGender());
                 newUser.setPassword(this.passwordEncoder.encode(newUserReqDto.getPassword()));
-                newUser.setEnabled(false);  //will be enabled on E-Mail verification
+                newUser.setIsEnabled(false);
 
                 newUser = this.userDao.save(newUser);
 
@@ -153,13 +163,13 @@ public class    UserService {
             UserService.CONSOLE_LOGGER.error("User password is incorrect");
 
             return new LoginResDto(
-                ELoggingInError.USER_WRONG_PASSWORD,
+                ELoggingInError.USER_DISABLED,
                 false,
                 null
             );
         }
 
-        if (!user.getEnabled()) {
+        if (!user.getIsEnabled()) {
             UserService.CONSOLE_LOGGER.error("User is not enabled");
 
             return new LoginResDto(
@@ -195,19 +205,38 @@ public class    UserService {
             );
     }
 
-    public void saveRegisteredUser(UserEntity user) {
-        userDao.save(user);
-    }
-
     public void createVerificationToken(UserEntity user, String token) {
-        VerificationToken myToken = new VerificationToken();
-        myToken.setToken(token);
-        myToken.setUser(user);
-        myToken.setExpiryDate(myToken.calculateExpiryDate());
-        tokenRepository.save(myToken);
+        VerificationTokenEntity verificationToken = new VerificationTokenEntity();
+        verificationToken.setToken(token);
+        verificationToken.setUser(user);
+        verificationToken.setExpiryDate(tokenExpiryCalculator.calculateExpiryDate());
+        tokenRepository.save(verificationToken);
     }
 
-    public VerificationToken getVerificationToken(String VerificationToken) {
+    public VerificationTokenEntity getVerificationToken(String VerificationToken) {
         return tokenRepository.findByToken(VerificationToken);
+    }
+
+    public String confirmUserRegistration(WebRequest request, Model model, String token) {
+        Locale locale = request.getLocale();
+
+        VerificationTokenEntity verificationToken = getVerificationToken(token);
+        if (verificationToken == null) {
+            String message = messages.getMessage("auth.message.invalidToken", null, locale);
+            model.addAttribute("message", message);
+            return "redirect:/badUser.html?lang=" + locale.getLanguage();
+        }
+
+        UserEntity user = verificationToken.getUser();
+        Calendar cal = Calendar.getInstance();
+        if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
+            String messageValue = messages.getMessage("auth.message.expired", null, locale);
+            model.addAttribute("message", messageValue);
+            //TODO redirect to new account creation page
+            return "redirect:/blank";
+        }
+
+        user.setIsEnabled(true);
+        return "redirect:/login";
     }
 }
