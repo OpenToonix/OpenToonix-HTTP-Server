@@ -49,4 +49,7 @@ public class UserEntity {
     @Column(name = "Updated_at")
     @UpdateTimestamp
     private Date updatedAt;
+    @Column(name = "enabled", nullable = false)
+    private Boolean enabled;
+    
 }

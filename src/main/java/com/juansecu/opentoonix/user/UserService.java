@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,9 +33,12 @@ import com.juansecu.opentoonix.user.models.UserInformationModel;
 import com.juansecu.opentoonix.user.models.entities.UserEntity;
 import com.juansecu.opentoonix.user.models.views.UserInformationView;
 import com.juansecu.opentoonix.usernameblacklist.UsernameBlacklistService;
+import com.juansecu.opentoonix.mail.OnRegistrationCompleteEvent;
+import com.juansecu.opentoonix.mail.VerificationToken;
+import com.juansecu.opentoonix.mail.VerificationTokenRepository;
 
 @Service
-public class UserService {
+public class    UserService {
     public static final String USER_AUTHENTICATION_COOKIE_NAME = "AUTH_TOKEN";
 
     private static final Logger CONSOLE_LOGGER = LogManager.getLogger(UserService.class);
@@ -53,6 +57,10 @@ public class UserService {
     private IUserInformationDao userInformationDao;
     @Autowired
     private UsernameBlacklistService usernameBlacklistService;
+    @Autowired
+    ApplicationEventPublisher eventPublisher;
+    @Autowired
+    private VerificationTokenRepository tokenRepository;
 
     @Transactional
     public void createUser(NewUserReqDto newUserReqDto) {
@@ -76,12 +84,15 @@ public class UserService {
                 );
                 newUser.setGender(newUserReqDto.getGender());
                 newUser.setPassword(this.passwordEncoder.encode(newUserReqDto.getPassword()));
+                newUser.setEnabled(false);  //will be enabled on E-Mail verification
 
                 newUser = this.userDao.save(newUser);
 
                 this.avatarService.createAvatar(newAvatarReqDto, newUser);
 
                 UserService.CONSOLE_LOGGER.info("User created successfully");
+
+                eventPublisher.publishEvent(new OnRegistrationCompleteEvent(newUser));
             } catch (Exception exception) {
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                 UserService.CONSOLE_LOGGER.error(
@@ -148,6 +159,16 @@ public class UserService {
             );
         }
 
+        if (!user.getEnabled()) {
+            UserService.CONSOLE_LOGGER.error("User is not enabled");
+
+            return new LoginResDto(
+                ELoggingInError.USER_NOT_ENABLED,
+                false,
+                null
+            );
+        }
+
         userInformation = this.userInformationDao.findByUsername(user.getUsername());
 
         return userInformation != null
@@ -172,5 +193,21 @@ public class UserService {
                 false,
                 null
             );
+    }
+
+    public void saveRegisteredUser(UserEntity user) {
+        userDao.save(user);
+    }
+
+    public void createVerificationToken(UserEntity user, String token) {
+        VerificationToken myToken = new VerificationToken();
+        myToken.setToken(token);
+        myToken.setUser(user);
+        myToken.setExpiryDate(myToken.calculateExpiryDate());
+        tokenRepository.save(myToken);
+    }
+
+    public VerificationToken getVerificationToken(String VerificationToken) {
+        return tokenRepository.findByToken(VerificationToken);
     }
 }
