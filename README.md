@@ -24,8 +24,9 @@ HTTP (Hypertext Transfer Protocol) server for Toonix World _(mostly known as **M
     | `DATABASE_PORT`              | The port where the database server is running      | `3306`                              |
     | `DATABASE_USERNAME`          | The name of the user who owns the database         | `opentoonix_user`                   |
     | `JWT_SECRET`                 | The secret used to sign and verify JSON Web Tokens | `jWT_S3cR3T`                        |
-    | `KEYSTORE_PATH`              | The path where keystore for ssl is stored          | `keystore/key.p12`                  |
+    | `KEYSTORE_PATH`              | The path where keystore for ssl is stored          | `C:/Users/usr/keystore/key.p12`     |
     | `KEYSTORE_PASSWORD`          | The password for the keystore                      | `keySt0re`                          |
+    | `KEYSTORE_TYPE`              | The certificate format from the keystore           | `PKCS12`                            |
 
     <br>
 
