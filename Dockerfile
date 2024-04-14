@@ -7,5 +7,5 @@ RUN mvn package -DskipTests
 
 FROM openjdk:11-jre-slim AS deploy
 COPY --from=build /app/target/*.war /app/app.war
-EXPOSE 8080
+EXPOSE 8443
 CMD ["java", "-jar", "/app/app.war"]
