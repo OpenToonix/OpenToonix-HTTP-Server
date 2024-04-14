@@ -9,7 +9,6 @@ import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 
 /* --- Third-party modules --- */
-import com.juansecu.opentoonix.shared.utils.mail.TokenExpiryCalculator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +24,13 @@ import org.springframework.web.context.request.WebRequest;
 /* --- Application modules --- */
 import com.juansecu.opentoonix.avatar.AvatarService;
 import com.juansecu.opentoonix.avatar.dtos.requests.NewAvatarReqDto;
+import com.juansecu.opentoonix.mail.OnRegistrationCompleteEvent;
+import com.juansecu.opentoonix.mail.VerificationTokenEntity;
+import com.juansecu.opentoonix.mail.VerificationTokenRepository;
 import com.juansecu.opentoonix.shared.adapters.JwtAdapter;
 import com.juansecu.opentoonix.shared.models.CookieModel;
 import com.juansecu.opentoonix.shared.providers.HostDetailsProvider;
+import com.juansecu.opentoonix.shared.utils.mail.TokenExpiryCalculator;
 import com.juansecu.opentoonix.user.daos.IUserDao;
 import com.juansecu.opentoonix.user.daos.IUserInformationDao;
 import com.juansecu.opentoonix.user.dtos.requests.LoginReqDto;
@@ -39,9 +42,6 @@ import com.juansecu.opentoonix.user.models.UserInformationModel;
 import com.juansecu.opentoonix.user.models.entities.UserEntity;
 import com.juansecu.opentoonix.user.models.views.UserInformationView;
 import com.juansecu.opentoonix.usernameblacklist.UsernameBlacklistService;
-import com.juansecu.opentoonix.mail.OnRegistrationCompleteEvent;
-import com.juansecu.opentoonix.mail.VerificationTokenEntity;
-import com.juansecu.opentoonix.mail.VerificationTokenRepository;
 
 @Service
 public class UserService {
@@ -163,7 +163,7 @@ public class UserService {
             UserService.CONSOLE_LOGGER.error("User password is incorrect");
 
             return new LoginResDto(
-                ELoggingInError.USER_DISABLED,
+                ELoggingInError.USER_WRONG_PASSWORD,
                 false,
                 null
             );
@@ -173,7 +173,7 @@ public class UserService {
             UserService.CONSOLE_LOGGER.error("User is not enabled");
 
             return new LoginResDto(
-                ELoggingInError.USER_NOT_ENABLED,
+                ELoggingInError.USER_DISABLED,
                 false,
                 null
             );
@@ -232,7 +232,6 @@ public class UserService {
         if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
             String messageValue = messages.getMessage("auth.message.expired", null, locale);
             model.addAttribute("message", messageValue);
-            //TODO redirect to new account creation page
             return "redirect:/blank";
         }
 

@@ -6,6 +6,7 @@ import java.util.UUID;
 
 /* --- Third-party modules --- */
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
@@ -23,10 +24,12 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationC
     private MessageSource messages;
     @Autowired
     private EmailUtil emailUtil;
-
-    //TODO dynamic host name URL from event
-    private String host = "localhost:8081";
-
+    @Value("${APPLICATION_HOST}")
+    private String host;
+    @Value("${APPLICATION_PORT}")
+    private String port;
+    @Value("${ACCOUNTS_FROM_EMAIL_ADDRESS}")
+    private String fromEmailAddress;
     @Override
     public void onApplicationEvent( OnRegistrationCompleteEvent event) {
         this.confirmRegistration(event);
@@ -39,10 +42,9 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationC
 
         String recipientAddress = user.getEmail();
         String subject = "Registration Confirmation";
-        //TODO language locale dynamic from event
         String confirmationUrl
-            = host + "/user/registrationConfirm?token=" + token;
+            = host +":"+ port + "/user/registrationConfirm?token=" + token;
         String message = messages.getMessage("message.regSucc", null, new Locale("en"));
-        emailUtil.sendEmail(recipientAddress, subject, message + "\r\n" + "http://localhost:8080" + confirmationUrl);
+        emailUtil.sendEmail(recipientAddress, subject, message + "\r\n"  + confirmationUrl, fromEmailAddress);
     }
 }
