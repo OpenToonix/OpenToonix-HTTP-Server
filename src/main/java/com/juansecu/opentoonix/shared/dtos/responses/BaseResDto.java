@@ -1,6 +1,5 @@
 package com.juansecu.opentoonix.shared.dtos.responses;
 
-/* --- Third-party modules --- */
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

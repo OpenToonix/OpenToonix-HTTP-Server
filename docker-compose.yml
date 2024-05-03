@@ -1,40 +1,35 @@
-version: '3.1'
+name: opentoonix-http-server
+version: '3.9'
 
 services:
-
   mysql:
     image: mysql:8
     restart: always
+    container_name: opentoonix_mysql
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${DATABASE_NAME}
-      MYSQL_USER: ${DATABASE_USERNAME}
       MYSQL_PASSWORD: ${DATABASE_PASSWORD}
-    volumes:
-      - mysql:/var/lib/mysql
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${DATABASE_USERNAME}
 
-  backend:
+  http-server:
+    image: opentoonix-http-server
+    container_name: opentoonix_http-server
     build:
       context: .
       dockerfile: Dockerfile
-    ports:
-      - "8443:8443"
     depends_on:
       - mysql
     environment:
-      AVATAR_STORAGE_FOLDER_PATH: /app/avatars
+      AVATAR_STORAGE_FOLDER_PATH: ${AVATAR_STORAGE_FOLDER_PATH}
       DATABASE_HOST: mysql
       DATABASE_NAME: ${DATABASE_NAME}
       DATABASE_PASSWORD: ${DATABASE_PASSWORD}
       DATABASE_PORT: 3306
       DATABASE_USERNAME: ${DATABASE_USERNAME}
       JWT_SECRET: ${JWT_SECRET}
-      KEYSTORE_PATH: ${KEYSTORE_PATH}
-      KEYSTORE_PASSWORD: ${KEYSTORE_PASSWORD}
-      KEYSTORE_TYPE: ${KEYSTORE_TYPE}
+      PORT: ${PORT}
+    ports:
+      - ${PORT}:${PORT}
     volumes:
-      - avatars:/app/avatar
-
-volumes:
-    mysql:
-    avatars:
+      - ${LOCAL_AVATAR_STORAGE_FOLDER_PATH}:${AVATAR_STORAGE_FOLDER_PATH}

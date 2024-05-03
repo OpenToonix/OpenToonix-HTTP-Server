@@ -1,0 +1,26 @@
+# Code editor files
+**/.idea
+**/.vscode
+
+# Docker files
+docker-compose.yml
+**/Dockerfile*
+
+# Documentation files
+**/docs
+**/CHANGELOG.md
+**/CONTRIBUTING.md
+**/HELP.md
+**/LICENSE
+**/README.md
+
+# Environment files
+**/.env
+
+# Build files
+**/target
+
+# Version control files
+**/.git
+**/.github
+**/.gitignore

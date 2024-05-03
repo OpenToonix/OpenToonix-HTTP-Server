@@ -1,26 +1,18 @@
 package com.juansecu.opentoonix.usernameblacklist.models.entities;
 
-/* --- Java modules --- */
 import java.util.Date;
 
-/* --- javax modules --- */
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-
-/* --- Third-party modules --- */
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 
-/* --- Application modules --- */
 import com.juansecu.opentoonix.shared.generators.NumericIdGenerator;
 
-/**
- * Represents the Username_blacklist table in the database.
- */
 @Data
 @Entity(name = "Username_blacklist")
 public class UsernameBlacklistEntity {
@@ -28,16 +20,16 @@ public class UsernameBlacklistEntity {
     @GeneratedValue(generator = NumericIdGenerator.GENERATOR_NAME)
     @GenericGenerator(
             name = NumericIdGenerator.GENERATOR_NAME,
-            strategy = "com.juansecu.opentoonix.shared.generators.NumericIdGenerator"
+            type = NumericIdGenerator.class
     )
     @Id
     private Integer usernameId;
     @Column(length = 12, name = "Username", nullable = false, unique = true)
     private String username;
-    @Column(name = "Added_at", updatable = false)
+    @Column(name = "Added_at", nullable = false, updatable = false)
     @CreationTimestamp
     private Date addedAt;
-    @Column(name = "Updated_at")
+    @Column(name = "Updated_at", nullable = false)
     @UpdateTimestamp
     private Date updatedAt;
 }
