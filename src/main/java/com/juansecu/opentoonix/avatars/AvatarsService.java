@@ -19,9 +19,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.juansecu.opentoonix.avatars.repositories.IAvatarsRepository;
+import com.juansecu.opentoonix.avatars.enums.EGetAvatarImageError;
 import com.juansecu.opentoonix.avatars.dtos.requests.NewAvatarReqDto;
 import com.juansecu.opentoonix.avatars.models.entities.AvatarEntity;
+import com.juansecu.opentoonix.avatars.repositories.IAvatarsRepository;
+import com.juansecu.opentoonix.shared.dtos.responses.BaseResDto;
 import com.juansecu.opentoonix.users.models.entities.UserEntity;
 
 @RequiredArgsConstructor
@@ -88,7 +90,7 @@ public class AvatarsService {
         );
     }
 
-    public ResponseEntity<byte[]> getAvatarImage(final UUID avatarId) {
+    public ResponseEntity<Object> getAvatarImage(final UUID avatarId) {
         try(
             final InputStream file = Files.newInputStream(
                 Path.of(
@@ -109,7 +111,13 @@ public class AvatarsService {
                 ioException.getMessage()
             );
 
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(
+                new BaseResDto<>(
+                    EGetAvatarImageError.ERROR_RETRIEVING_AVATAR_IMAGE,
+                    false
+                ),
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
         }
     }
 }

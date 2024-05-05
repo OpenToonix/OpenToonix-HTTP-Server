@@ -20,6 +20,8 @@ import com.juansecu.opentoonix.users.models.entities.UserEntity;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationValidationUtil {
+    private static final String AUTHENTICATION_HEADER_NAME = "Authorization";
+    private static final String AUTHENTICATION_HEADER_PREFIX = "Bearer ";
     private static final Logger CONSOLE_LOGGER = LogManager.getLogger(JwtAuthenticationValidationUtil.class);
     private static final String TOKEN_PATTERN = "^([0-9a-z_=]+)\\.([0-9a-z_=]+)\\.([0-9a-z_\\-+/=]+)$";
 
@@ -34,10 +36,25 @@ public class JwtAuthenticationValidationUtil {
         String username;
 
         final Cookie authenticationCookie = this.getAuthenticationCookie(request);
+        final String authenticationHeaderValue = request.getHeader(
+            JwtAuthenticationValidationUtil.AUTHENTICATION_HEADER_NAME
+        );
+        final boolean isValidAuthenticationCookie = this.isValidToken(authenticationCookie);
+        final boolean isValidAuthenticationHeaderValue = this.isValidToken(authenticationHeaderValue);
 
-        if (!this.isValidToken(authenticationCookie)) return null;
+        if (
+            !isValidAuthenticationCookie &&
+            !isValidAuthenticationHeaderValue
+        ) return null;
 
-        token = Objects.requireNonNull(authenticationCookie).getValue();
+        if (isValidAuthenticationCookie) {
+            token = Objects.requireNonNull(authenticationCookie).getValue();
+        } else {
+            token = authenticationHeaderValue.substring(
+                JwtAuthenticationValidationUtil.AUTHENTICATION_HEADER_PREFIX.length()
+            );
+        }
+
         username = this.jwtAdapter.getSubject(token);
         user = (UserEntity) this.userDetailsService.loadUserByUsername(username);
 
@@ -94,6 +111,41 @@ public class JwtAuthenticationValidationUtil {
 
             return false;
         }
+
+        return this.jwtAdapter.isValidJsonWebToken(token);
+    }
+
+    private boolean isValidToken(final String authenticationHeaderValue) {
+        if (authenticationHeaderValue == null) {
+            JwtAuthenticationValidationUtil.CONSOLE_LOGGER.error(
+                "Authentication header is not present"
+            );
+
+            return false;
+        }
+
+        String token;
+
+        final Pattern pattern = Pattern.compile(
+            "^" +
+                JwtAuthenticationValidationUtil.AUTHENTICATION_HEADER_PREFIX +
+                JwtAuthenticationValidationUtil.TOKEN_PATTERN +
+                "$",
+            Pattern.CASE_INSENSITIVE
+        );
+        final Matcher matcher = pattern.matcher(authenticationHeaderValue);
+
+        if(!matcher.find()) {
+            JwtAuthenticationValidationUtil.CONSOLE_LOGGER.error(
+                "Invalid authentication header value"
+            );
+
+            return false;
+        }
+
+        token = authenticationHeaderValue.substring(
+            AUTHENTICATION_HEADER_PREFIX.length()
+        );
 
         return this.jwtAdapter.isValidJsonWebToken(token);
     }

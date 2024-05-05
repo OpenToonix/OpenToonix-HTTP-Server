@@ -68,6 +68,10 @@ Note that you can also use a reverse proxy (e.g. Nginx, Apache, etc.).
 
 You can check the current state of features [here](https://github.com/OpenToonix/OpenToonix-HTTP-Server/wiki/Features).
 
+## API Documentation
+
+The API documentation is available at the endpoint `/api/docs`.
+
 ## Running
 
 ### Using Docker (Recommended)
