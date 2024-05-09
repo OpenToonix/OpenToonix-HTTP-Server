@@ -79,7 +79,7 @@ The API documentation is available at the endpoint `/api/docs`.
 In order to run the application using [Docker](https://www.docker.com/),
 you must have Docker installed on your machine.
 
-For running the application with Docker, you will need to mount both
+For running the application with Docker, you will need to mount
 avatars storage folder using Docker volumes
 and map port `8080` to your host machine.
 
@@ -89,8 +89,7 @@ and map port `8080` to your host machine.
 
     ```shell
     > docker run -dp 8080:8080 \
-        -v <path\to\avatars\storage\folder>:${DATABASE_PATH} \
-        -v <path\to\keystore>:${SSL_KEY_STORE} \
+        -v <local\path\to\avatars\storage\folder>:${AVATAR_STORAGE_FOLDER_PATH} \
         --env-file <path\to\env\file> \
         --name <container-name> \
         juansecu/opentoonix-http-server:v<version number>
@@ -100,8 +99,7 @@ and map port `8080` to your host machine.
 
     ```shell
     $ docker run -dp 8080:8080 \
-        -v <path/to/avatars/storage/folder>:${DATABASE_PATH} \
-        -v <path/to/keystore>:${SSL_KEY_STORE} \
+        -v <local/path/to/avatars/storage/folder>:${AVATAR_STORAGE_FOLDER_PATH} \
         --env-file <path/to/env/file> \
         --name <container-name> \
         juansecu/opentoonix-http-server:v<version number>
