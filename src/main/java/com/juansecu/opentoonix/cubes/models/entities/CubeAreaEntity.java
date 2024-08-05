@@ -17,14 +17,18 @@ public class CubeAreaEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Integer cubeAreaId;
-    @Column(name = "Name", nullable = false, unique = true)
+    @Column(length = 45, name = "Name", nullable = false, unique = true)
     private String name;
-    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "areas")
-    private List<CubeItemEntity> cubeItemAreas;
     @Column(name = "Added_at", nullable = false, updatable = false)
     @CreationTimestamp
     private Date addedAt;
     @Column(name = "Updated_at", nullable = false)
     @UpdateTimestamp
     private Date updatedAt;
+    @ManyToMany(
+        cascade = CascadeType.ALL,
+        fetch = FetchType.LAZY,
+        mappedBy = "cubeAreas"
+    )
+    private List<CubeItemEntity> cubeItems;
 }

@@ -12,8 +12,9 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.juansecu.opentoonix.users.enums.EUserGender;
+import com.juansecu.opentoonix.avatars.models.entities.AvatarEntity;
 import com.juansecu.opentoonix.shared.generators.NumericIdGenerator;
+import com.juansecu.opentoonix.users.enums.EUserGender;
 
 @Data
 @Entity(name = "Users")
@@ -45,6 +46,12 @@ public class UserEntity implements UserDetails {
     @Column(name = "Updated_at")
     @UpdateTimestamp
     private Date updatedAt;
+    @OneToOne(
+        cascade = CascadeType.ALL,
+        fetch = FetchType.LAZY,
+        mappedBy = "user"
+    )
+    private AvatarEntity avatar;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

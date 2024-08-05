@@ -16,24 +16,36 @@ public class CubeItemAreaEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Integer cubeItemAreaId;
-    @JoinColumn(
-        columnDefinition = "INTEGER UNSIGNED",
-        name = "Cube_item_id",
-        nullable = false
-    )
-    @ManyToOne(cascade = CascadeType.ALL)
-    private CubeItemEntity cubeItem;
-    @JoinColumn(
-        columnDefinition = "INTEGER UNSIGNED",
-        name = "Cube_area_id",
-        nullable = false
-    )
-    @ManyToOne(cascade = CascadeType.ALL)
-    private CubeAreaEntity cubeArea;
+    @Column(name = "Cube_item_id", nullable = false)
+    private int cubeItemId;
+    @Column(name = "Cube_area_id", nullable = false)
+    private int cubeAreaId;
     @Column(name = "Added_at", nullable = false, updatable = false)
     @CreationTimestamp
     private Date addedAt;
     @Column(name = "Updated_at", nullable = false)
     @UpdateTimestamp
     private Date updatedAt;
+    @JoinColumn(
+        insertable = false,
+        name = "Cube_item_id",
+        referencedColumnName = "Cube_item_id",
+        updatable = false
+    )
+    @ManyToOne(
+        cascade = CascadeType.ALL,
+        fetch = FetchType.LAZY
+    )
+    private CubeItemEntity cubeItem;
+    @JoinColumn(
+        insertable = false,
+        name = "Cube_area_id",
+        referencedColumnName = "Cube_area_id",
+        updatable = false
+    )
+    @ManyToOne(
+        cascade = CascadeType.ALL,
+        fetch = FetchType.LAZY
+    )
+    private CubeAreaEntity cubeArea;
 }

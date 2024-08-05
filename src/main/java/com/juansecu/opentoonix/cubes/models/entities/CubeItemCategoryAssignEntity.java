@@ -12,28 +12,40 @@ import org.hibernate.annotations.UpdateTimestamp;
 @Getter
 @Setter
 public class CubeItemCategoryAssignEntity {
-    @Column(name = "Cube_item_category_assign", nullable = false)
+    @Column(name = "Cube_item_category_assign_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Integer cubeItemCategoryAssign;
-    @JoinColumn(
-        columnDefinition = "INTEGER UNSIGNED",
-        name = "Cube_item_id",
-        nullable = false
-    )
-    @ManyToOne(cascade = CascadeType.ALL)
-    private CubeItemEntity cubeItem;
-    @JoinColumn(
-        columnDefinition = "INTEGER UNSIGNED",
-        name = "Cube_item_category_id",
-        nullable = false
-    )
-    @ManyToOne(cascade = CascadeType.ALL)
-    private CubeItemCategoryEntity cubeItemCategory;
-    @Column(name = "Added_at", nullable = false, updatable = false)
+    @Column(name = "Cube_item_id", nullable = false)
+    private int cubeItemId;
+    @Column(name = "Cube_item_category_id", nullable = false)
+    private int cubeItemCategoryId;
+    @Column(name = "Assigned_at", nullable = false, updatable = false)
     @CreationTimestamp
-    private Date addedAt;
+    private Date assignedAt;
     @Column(name = "Updated_at", nullable = false)
     @UpdateTimestamp
     private Date updatedAt;
+    @JoinColumn(
+        insertable = false,
+        name = "Cube_item_id",
+        referencedColumnName = "Cube_item_id",
+        updatable = false
+    )
+    @ManyToOne(
+        cascade = CascadeType.ALL,
+        fetch = FetchType.LAZY
+    )
+    private CubeItemEntity cubeItem;
+    @JoinColumn(
+        insertable = false,
+        name = "Cube_item_category_id",
+        referencedColumnName = "Cube_item_category_id",
+        updatable = false
+    )
+    @ManyToOne(
+        cascade = CascadeType.ALL,
+        fetch = FetchType.LAZY
+    )
+    private CubeItemCategoryEntity cubeItemCategory;
 }

@@ -22,36 +22,43 @@ public class AvatarEntity {
     )
     @Id
     private Integer avatarId;
-    @Column(name = "Costume", nullable = false)
-    private int costume;
+    @Column(name = "Costume_id", nullable = false)
+    private int costumeId;
     @Column(name = "Skin_color", nullable = false)
     private int skinColor;
-    @Column(name = "Head", nullable = false)
-    private int head;
+    @Column(name = "Head_id", nullable = false)
+    private int headId;
     @Column(name = "Head_color", nullable = false)
     private int headColor;
-    @Column(name = "Eyes", nullable = false)
-    private int eye;
-    @Column(name = "Mouth", nullable = false)
+    @Column(name = "Eyes_id", nullable = false)
+    private int eyesId;
+    @Column(name = "Mouth_id", nullable = false)
     private int mouth;
-    @Column(name = "Body", nullable = false)
-    private int body;
+    @Column(name = "Body_id", nullable = false)
+    private int bodyId;
     @Column(name = "Body_color", nullable = false)
     private int bodyColor;
     @Column(length = 100, name = "Image_path", nullable = false)
     private String imagePath;
     @Column(name = "Credits", nullable = false)
     private int credits = 150;
-    @JoinColumn(name = "User_id", nullable = false, referencedColumnName = "User_id", unique = true)
-    @OneToOne(
-        cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
-        targetEntity = UserEntity.class
-    )
-    private UserEntity userId;
+    @Column(name = "User_id", nullable = false, unique = true)
+    private int userId;
     @Column(name = "Created_at", updatable = false)
     @CreationTimestamp
     private Date createdAt;
     @Column(name = "Updated_at")
     @UpdateTimestamp
     private Date updatedAt;
+    @JoinColumn(
+        insertable = false,
+        name = "User_id",
+        referencedColumnName = "User_id",
+        updatable = false
+    )
+    @OneToOne(
+        cascade = CascadeType.ALL,
+        fetch = FetchType.LAZY
+    )
+    private UserEntity user;
 }

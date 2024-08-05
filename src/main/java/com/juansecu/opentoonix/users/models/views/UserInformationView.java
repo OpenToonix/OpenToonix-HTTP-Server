@@ -20,24 +20,24 @@ public class UserInformationView {
     private EUserGender gender;
     @Column(name = "Age")
     private int age;
-    @Column(name = "Credits")
-    private int credits;
-    @Column(name = "Body")
-    private int avatarBody;
-    @Column(name = "Body_color")
-    private int avatarBodyColor;
-    @Column(name = "Costume")
+    @Column(name = "Costume_id")
     private int avatarCostume;
-    @Column(name = "Eyes")
-    private int avatarEyes;
-    @Column(name = "Head")
+    @Column(name = "Skin_color")
+    private int avatarSkinColor;
+    @Column(name = "Head_id")
     private int avatarHead;
     @Column(name = "Head_color")
     private int avatarHeadColor;
+    @Column(name = "Eyes_id")
+    private int avatarEyes;
+    @Column(name = "Mouth_id")
+    private int avatarMouth;
+    @Column(name = "Body_id")
+    private int avatarBody;
+    @Column(name = "Body_color")
+    private int avatarBodyColor;
+    @Column(name = "Credits")
+    private int credits;
     @Column(name = "Image_path")
     private String avatarImagePath;
-    @Column(name = "Mouth")
-    private int avatarMouth;
-    @Column(name = "Skin_color")
-    private int avatarSkinColor;
 }

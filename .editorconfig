@@ -8,5 +8,8 @@ indent_style = space
 insert_final_newline = true
 max_line_length = 80
 
+[*.csv]
+insert_final_newline = false
+
 [*.yml]
 indent_size = 2

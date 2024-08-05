@@ -70,16 +70,16 @@ public class AvatarsService {
             outputFile
         );
 
-        newAvatar.setCostume(newAvatarReqDto.getCostume());
+        newAvatar.setCostumeId(newAvatarReqDto.getCostume());
         newAvatar.setSkinColor(newAvatarReqDto.getSkinColor());
-        newAvatar.setHead(newAvatarReqDto.getHead());
+        newAvatar.setHeadId(newAvatarReqDto.getHead());
         newAvatar.setHeadColor(newAvatarReqDto.getHeadColor());
-        newAvatar.setEye(newAvatarReqDto.getEye());
+        newAvatar.setEyesId(newAvatarReqDto.getEye());
         newAvatar.setMouth(newAvatarReqDto.getMouth());
-        newAvatar.setBody(newAvatarReqDto.getBody());
+        newAvatar.setBodyId(newAvatarReqDto.getBody());
         newAvatar.setBodyColor(newAvatarReqDto.getBodyColor());
         newAvatar.setImagePath(this.contextPath + "/avatars/" + uuid);
-        newAvatar.setUserId(user);
+        newAvatar.setUserId(user.getUserId());
 
         this.avatarDao.save(newAvatar);
 

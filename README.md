@@ -14,6 +14,14 @@ for Toonix World _(mostly known as **Mundo Toonix**)_.
 
 - **Java -** Version 17
 - **Database engine -** MySQL version 8.x
+
+    Before installing the database engine,
+    you should verify the compatibility of the database engine
+    with Flyway, the database migration tool used in this project.
+
+    You can check the compatibility of the database engine
+    with Flyway [here](https://documentation.red-gate.com/flyway/flyway-cli-and-api/supported-databases/mysql).
+
 - **Environment variables**
 
     | Variable                     | Type    | Description                                             | Required | Default               | Example                             |
@@ -73,6 +81,26 @@ You can check the current state of features [here](https://github.com/OpenToonix
 The API documentation is available at the endpoint `/api/docs`.
 
 ## Running
+
+Before running the application,
+make sure the option `secure_file_priv`
+is set to an empty value in the MySQL configuration file,
+which is usually located at `/etc/my.cnf` in Linux systems.
+because some database migrations (or database initialization scripts)
+require the use of the `LOAD DATA LOCAL INFILE` statement.
+
+For further information about the `secure_file_priv` option,
+you can check the [MySQL documentation](https://dev.mysql.com/doc/refman/8.0/en/server-system-variables.html#sysvar_secure_file_priv).
+
+Also, make sure to enable the `local_infile` option in the MySQL configuration file,
+or using the following command:
+
+```sql
+SET GLOBAL local_infile = 1;
+```
+
+For further information about the `local_infile` option,
+you can check the [MySQL documentation](https://dev.mysql.com/doc/refman/8.4/en/server-system-variables.html#sysvar_local_infile).
 
 ### Using Docker (Recommended)
 
