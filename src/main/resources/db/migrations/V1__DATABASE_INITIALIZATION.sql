@@ -10,6 +10,61 @@ CREATE TABLE IF NOT EXISTS Users (
     Updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS Roles (
+    Role_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(30) NOT NULL UNIQUE,
+    Description VARCHAR(100) NOT NULL UNIQUE,
+    Added_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    Updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS User_roles (
+    User_id INT UNSIGNED NOT NULL,
+    Role_id INT UNSIGNED NOT NULL,
+    Assigned_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    Updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (User_id) REFERENCES Users(User_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    FOREIGN KEY (Role_id) REFERENCES Roles(Role_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS Permissions (
+    Permission_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(30) NOT NULL UNIQUE,
+    Description VARCHAR(100) NOT NULL UNIQUE,
+    Added_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    Updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS Role_permissions (
+    Role_id INT UNSIGNED NOT NULL,
+    Permission_id INT UNSIGNED NOT NULL,
+    Assigned_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    Updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (Role_id) REFERENCES Roles(Role_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    FOREIGN KEY (Permission_id) REFERENCES Permissions(Permission_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS User_permissions (
+    User_id INT UNSIGNED NOT NULL,
+    Permission_id INT UNSIGNED NOT NULL,
+    Assigned_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    Updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (User_id) REFERENCES Users(User_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    FOREIGN KEY (Permission_id) REFERENCES Permissions(Permission_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS Avatar_body_part_categories (
     Avatar_body_part_category_id INT UNSIGNED PRIMARY KEY,
     Name VARCHAR(45) NOT NULL UNIQUE,
@@ -636,3 +691,29 @@ VALUES
     (168, 2),
     (169, 2),
     (170, 2);
+
+INSERT INTO Permissions (Permission_id, Name, Description)
+VALUES
+    (1, 'BAN_USERS', 'Ban users'),
+    (2, 'BAN_USERNAMES', 'Ban usernames'),
+    (3, 'DELETE_USERS', 'Delete users'),
+    (4, 'UNBAN_USERS', 'Unban users'),
+    (5, 'UNBAN_USERNAMES', 'Unban usernames');
+
+INSERT INTO Roles (Role_id, Name, Description)
+VALUES
+    (1, 'ADMIN', 'Administrator'),
+    (2, 'MODERATOR', 'Moderator'),
+    (3, 'USER', 'User');
+
+INSERT INTO Role_permissions (Role_id, Permission_id)
+VALUES
+    (1, 1),
+    (1, 2),
+    (1, 3),
+    (1, 4),
+    (1, 5),
+    (2, 1),
+    (2, 2),
+    (2, 4),
+    (2, 5);

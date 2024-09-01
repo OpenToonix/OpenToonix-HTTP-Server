@@ -165,6 +165,19 @@ public class AuthService {
             );
         }
 
+        if (!user.isEnabled()) {
+            AuthService.CONSOLE_LOGGER.error(
+                "User {} is disabled",
+                loginReqDto.getUsername()
+            );
+
+            return new LoginResDto(
+                ELoggingInError.USER_DISABLED,
+                false,
+                null
+            );
+        }
+
         passwordMatches = passwordEncoder.matches(
             loginReqDto.getPassword(),
             user.getPassword()

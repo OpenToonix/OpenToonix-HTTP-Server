@@ -33,6 +33,7 @@ public class WebSecurityConfig {
                         "/docs",
                         "/swagger-ui/**"
                     ).permitAll()
+                    .requestMatchers("/avatars").hasAuthority("USER")
                     .anyRequest().authenticated()
             )
             .addFilterBefore(

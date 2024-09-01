@@ -25,7 +25,7 @@ for Toonix World _(mostly known as **Mundo Toonix**)_.
 - **Environment variables**
 
     | Variable                     | Type    | Description                                             | Required | Default               | Example                             |
-    | ---------------------------- | ------- | ------------------------------------------------------- | -------- | --------------------- | ----------------------------------- |
+    |------------------------------|---------|---------------------------------------------------------|----------|-----------------------|-------------------------------------|
     | `AVATAR_STORAGE_FOLDER_PATH` | String  | The path where user avatars will be stored              | Yes      | None                  | `C:/Users/usr/Documents/OpenToonix` |
     | `CORS_ALLOWED_ORIGINS`       | String  | The allowed origins for CORS requests, separated by `,` | No       | `http://localhost:80` | `http://localhost:3000`             |
     | `DATABASE_HOST`              | String  | The host where the database server is running           | Yes      | None                  | `localhost`                         |
