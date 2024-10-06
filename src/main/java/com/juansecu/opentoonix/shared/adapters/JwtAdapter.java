@@ -40,7 +40,7 @@ public class JwtAdapter {
     }
 
     public boolean isValidJsonWebToken(final String token) {
-        DecodedJWT decodedJwt = null;
+        DecodedJWT decodedJwt;
 
         final Algorithm algorithm = Algorithm.HMAC256(this.jwtSecret);
         final Date today = new Date();

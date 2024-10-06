@@ -1,6 +1,6 @@
 # OpenToonix HTTP Server
 
-<div align="center">
+<div style="text-align: center">
 
 [![Discord Server](https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/8ZWkyXnv4h)
 [![Twitter](https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/OpenToonix)
@@ -24,20 +24,28 @@ for Toonix World _(mostly known as **Mundo Toonix**)_.
 
 - **Environment variables**
 
-    | Variable                     | Type    | Description                                             | Required | Default               | Example                             |
-    |------------------------------|---------|---------------------------------------------------------|----------|-----------------------|-------------------------------------|
-    | `AVATAR_STORAGE_FOLDER_PATH` | String  | The path where user avatars will be stored              | Yes      | None                  | `C:/Users/usr/Documents/OpenToonix` |
-    | `CORS_ALLOWED_ORIGINS`       | String  | The allowed origins for CORS requests, separated by `,` | No       | `http://localhost:80` | `http://localhost:3000`             |
-    | `DATABASE_HOST`              | String  | The host where the database server is running           | Yes      | None                  | `localhost`                         |
-    | `DATABASE_NAME`              | String  | The name of the database                                | Yes      | None                  | `opentoonix_database`               |
-    | `DATABASE_PASSWORD`          | String  | The password of the user who owns the database          | Yes      | None                  | `openT00nix_Database_paSsW0rd`      |
-    | `DATABASE_PORT`              | Integer | The port where the database server is running           | Yes      | None                  | `3306`                              |
-    | `DATABASE_USERNAME`          | String  | The name of the user who owns the database              | Yes      | None                  | `opentoonix_user`                   |
-    | `JWT_SECRET`                 | String  | The secret used to sign and verify JSON Web Tokens      | Yes      | None                  | `jWT_S3cR3T`                        |
-    | `PORT`                       | Integer | The port where the server will be running               | No       | `8080`                | `8443`                              |
-    | `PUBLIC_HOST_ADDRESS`        | String  | The public host address of the server                   | No       | `localhost`           | `example.com`                       |
-    | `SHOULD_USE_SSL`             | Boolean | Whether to use HTTPS protocol or not                    | No       | `false`               | `true`                              |
-    | `SHOULD_INCLUDE_SERVER_PORT` | Boolean | Whether to include the server port in the URL           | No       | `true`                | `false`                             |
+    | Variable                                         | Type    | Description                                                                               | Required | Default                 | Example                                                |
+    |--------------------------------------------------|---------|-------------------------------------------------------------------------------------------|----------|-------------------------|--------------------------------------------------------|
+    | `AVATAR_STORAGE_FOLDER_PATH`                     | String  | The path where user avatars will be stored                                                | Yes      | None                    | `C:/Users/usr/Documents/OpenToonix/avatars`            |
+    | `CORS_ALLOWED_ORIGINS`                           | String  | The allowed origins for CORS requests, separated by `,`                                   | No       | `http://localhost:80`   | `https://amf-services.example.com,https://example.com` |
+    | `DATABASE_HOST`                                  | String  | The host where the database server is running                                             | Yes      | None                    | `localhost`                                            |
+    | `DATABASE_NAME`                                  | String  | The name of the database                                                                  | Yes      | None                    | `<MySQL database name>`                                |
+    | `DATABASE_PASSWORD`                              | String  | The password of the user who owns the database                                            | Yes      | None                    | `<MySQL user password>`                                |
+    | `DATABASE_PORT`                                  | Integer | The port where the database server is running                                             | Yes      | None                    | `3306`                                                 |
+    | `DATABASE_USERNAME`                              | String  | The name of the user who owns the database                                                | Yes      | None                    | `<MySQL user>`                                         |
+    | `ISSUER_ACCOUNT_RELATED_NAME`                    | String  | The name of the issuer of account-related emails                                          | No       | `${ISSUER_NAME}`        | `OpenToonix Accounts`                                  |
+    | `ISSUER_NAME`                                    | String  | The name of the issuer of the emails                                                      | Yes      | None                    | `OpenToonix`                                           |
+    | `ISSUER_SUPPORT_ADDRESS`                         | String  | The address used to give support to users                                                 | Yes      | None                    | `support@example.com`                                  |
+    | `JWT_SECRET`                                     | String  | The secret used to sign and verify JSON Web Tokens                                        | Yes      | None                    | `<JSON Web Token secret>`                              |
+    | `MAIL_SERVER_FROM_ACCOUNT_RELATED_EMAIL_ADDRESS` | String  | The email address used to send emails related to account management                       | Yes      | None                    | `example@example.com`                                  |
+    | `MAIL_SERVER_HOST`                               | String  | The host where the email server is running on                                             | No       | `smtp.gmail.com`        | `smtp.example.com`                                     |
+    | `MAIL_SERVER_PASSWORD`                           | String  | The password of the email account used to send emails                                     | Yes      | None                    | `<Mail server password>`                               |
+    | `MAIL_SERVER_PORT`                               | Integer | The port where the email server is running on                                             | No       | `587`                   | `465`                                                  |
+    | `MAIL_SERVER_USERNAME`                           | String  | The username of the email account used to send emails                                     | Yes      | None                    | `<Mail server username>`                               |
+    | `PORT`                                           | Integer | The port where the server will be running                                                 | No       | `8080`                  | `8443`                                                 |
+    | `PUBLIC_ADDRESS`                                 | String  | The public address where clients and browsers will be able to access the application from | No       | `http://localhost:8080` | `https://example.com`                                  |
+    | `VERIFICATION_TOKENS_SALT_KEY`                   | String  | The salt key used to encrypt and decrypt verification tokens                              | Yes      | None                    | `<Verification token salt key>`                        |
+    | `VERIFICATION_TOKENS_SECURITY_KEY`               | String  | The security key used to encrypt and decrypt verification tokens                          | Yes      | None                    | `<Verification token security key>`                    |
 
     <br>
 
@@ -48,8 +56,13 @@ for Toonix World _(mostly known as **Mundo Toonix**)_.
     - You can generate secrets using tools
       like [Random Key Gen](https://randomkeygen.com/).
       256-bit keys are recommended.
-    - For setting the `PUBLIC_HOST_ADDRESS` environment variable,
+    - For setting the `PUBLIC_ADDRESS` environment variable,
       you can use your domain name or your public IP address.
+    - For security reasons,
+      `VERIFICATION_TOKENS_SALT_KEY` and `VERIFICATION_TOKENS_SECURITY_KEY`
+      must be different from each other.
+    - For setting up the `MAIL_SERVER_*` environment variables,
+      check out the SMTP Server setup section.
 
 ### Development Tools
 

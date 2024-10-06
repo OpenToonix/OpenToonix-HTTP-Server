@@ -50,7 +50,9 @@ public class AuthController {
         summary = "Validates the username"
     )
     @GetMapping("/is-valid-username")
-    public IsValidUsernameResDto isValidUsername(@RequestParam("username") final String username) {
+    public IsValidUsernameResDto isValidUsername(
+        @RequestParam("username") final String username
+    ) {
         return this.authService.isValidUsername(username);
     }
 
@@ -122,6 +124,6 @@ public class AuthController {
         }
     )
     public void register(@Valid final RegisterReqDto registerReqDto) {
-        this.authService.createUser(registerReqDto);
+        this.authService.register(registerReqDto);
     }
 }

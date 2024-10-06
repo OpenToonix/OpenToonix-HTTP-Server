@@ -12,7 +12,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
-import com.juansecu.opentoonix.auth.AuthService;
+import com.juansecu.opentoonix.auth.AuthConstants;
 import com.juansecu.opentoonix.auth.models.AuthenticationDetails;
 import com.juansecu.opentoonix.shared.adapters.JwtAdapter;
 import com.juansecu.opentoonix.users.models.entities.UserEntity;
@@ -72,7 +72,12 @@ public class JwtAuthenticationValidationUtil {
         }
 
         for (Cookie cookie : cookies) {
-            if (Objects.equals(cookie.getName(), AuthService.USER_AUTHENTICATION_COOKIE_NAME)) {
+            if (
+                Objects.equals(
+                    cookie.getName(),
+                    AuthConstants.USER_AUTHENTICATION_COOKIE_NAME
+                )
+            ) {
                 authenticationCookie = cookie;
                 break;
             }
