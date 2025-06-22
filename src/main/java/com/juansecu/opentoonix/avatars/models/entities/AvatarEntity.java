@@ -22,8 +22,8 @@ public class AvatarEntity {
     )
     @Id
     private Integer avatarId;
-    @Column(name = "Costume_id", nullable = false)
-    private int costumeId;
+    @Column(name = "Costume_id", nullable = true)
+    private Integer costumeId;
     @Column(name = "Skin_color", nullable = false)
     private int skinColor;
     @Column(name = "Head_id", nullable = false)
@@ -61,4 +61,10 @@ public class AvatarEntity {
         fetch = FetchType.LAZY
     )
     private UserEntity user;
+
+    @PrePersist
+    @PreUpdate
+    private void prePersistAndUpdate() {
+        if (this.costumeId == 0) this.costumeId = null;
+    }
 }

@@ -20,7 +20,7 @@ import com.juansecu.opentoonix.verificationtokens.enums.EVerificationTokenType;
 @RequiredArgsConstructor
 public class VerificationTokenEntity {
     @Column(name = "Verification_token_id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Integer verificationTokenId;
     @Column(

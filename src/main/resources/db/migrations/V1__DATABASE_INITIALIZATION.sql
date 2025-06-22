@@ -102,7 +102,7 @@ CREATE TABLE IF NOT EXISTS Avatar_costumes (
 
 CREATE TABLE IF NOT EXISTS Avatars (
     Avatar_id INT UNSIGNED PRIMARY KEY,
-    Costume_id INT UNSIGNED NOT NULL,
+    Costume_id INT UNSIGNED,
     Skin_color INT UNSIGNED NOT NULL,
     Head_id INT UNSIGNED NOT NULL,
     Head_color INT UNSIGNED NOT NULL,
