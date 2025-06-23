@@ -39,7 +39,8 @@ public class VerificationTokenEntity {
     @Column(name = "Metadata")
     private String metadata;
     @Column(name = "User_id", nullable = false)
-    private int userId;
+    @NonNull
+    private Integer userId;
     @Column(
         name = "Created_at",
         nullable = false,
@@ -63,7 +64,6 @@ public class VerificationTokenEntity {
         cascade = CascadeType.ALL,
         fetch = FetchType.LAZY
     )
-    @NonNull
     private UserEntity user;
 
     public VerificationTokenEntity(
@@ -71,12 +71,12 @@ public class VerificationTokenEntity {
         final EVerificationTokenType type,
         final String metadata,
         final Date expiresAt,
-        final UserEntity user
+        final Integer userId
     ) {
         this.token = token;
         this.type = type;
         this.metadata = metadata;
         this.expiresAt = expiresAt;
-        this.user = user;
+        this.userId = userId;
     }
 }

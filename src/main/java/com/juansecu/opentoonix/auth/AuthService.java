@@ -12,8 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.juansecu.opentoonix.auth.dtos.requests.LoginReqDto;
@@ -48,6 +49,7 @@ public class AuthService {
     private final JwtAdapter jwtAdapter;
     private final PasswordEncoder passwordEncoder;
     private final IRolesRepository rolesRepository;
+    private final PlatformTransactionManager transactionManager;
     private final UserDetailsService userDetailsService;
     private final IUsersInformationRepository userInformationRepository;
     private final UsernameBlacklistService usernameBlacklistService;
@@ -155,7 +157,6 @@ public class AuthService {
         );
     }
 
-    @Transactional
     public void register(final RegisterReqDto registerReqDto) {
         NewAvatarReqDto newAvatarReqDto;
         UserEntity newUser;
@@ -165,6 +166,9 @@ public class AuthService {
         );
         final String existentUsername = this.usersRepository.findUsername(
             registerReqDto.getUsername()
+        );
+        final TransactionStatus transactionStatus = this.transactionManager.getTransaction(
+            new DefaultTransactionDefinition()
         );
 
         AuthService.CONSOLE_LOGGER.info(
@@ -212,8 +216,15 @@ public class AuthService {
             newUser = this.usersRepository.save(newUser);
 
             this.avatarsService.createAvatar(newAvatarReqDto, newUser);
+
+            this.applicationEventPublisher.publishEvent(
+                new UserRegisterEvent(newUser)
+            );
+
+            this.transactionManager.commit(transactionStatus);
         } catch (Exception exception) {
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            if (!transactionStatus.isCompleted())
+                this.transactionManager.rollback(transactionStatus);
 
             AuthService.CONSOLE_LOGGER.error(
                 "There was an unexpected error while trying to register new user: {}",
@@ -225,10 +236,6 @@ public class AuthService {
                 "There was an unexpected error while trying to register new user"
             );
         }
-
-        this.applicationEventPublisher.publishEvent(
-            new UserRegisterEvent(newUser)
-        );
 
         AuthService.CONSOLE_LOGGER.info(
             "User {} created successfully",

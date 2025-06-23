@@ -8,8 +8,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 import com.juansecu.opentoonix.auth.events.UserRegisterEvent;
 import com.juansecu.opentoonix.shared.providers.HostDetailsProvider;
@@ -23,7 +26,7 @@ import com.juansecu.opentoonix.verificationtokens.models.entities.VerificationTo
 
 @Component
 @RequiredArgsConstructor
-public class UserRegisterListener implements ApplicationListener<UserRegisterEvent> {
+public class UserRegisterListener {
     private static final Logger CONSOLE_LOGGER = LogManager.getLogger(UserRegisterListener.class);
 
     @Value("${mail.new-account-email-verification-message.message}")
@@ -36,7 +39,8 @@ public class UserRegisterListener implements ApplicationListener<UserRegisterEve
     private final ObjectMapper objectMapper;
     private final VerificationTokensService verificationTokensService;
 
-    @Override
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void onApplicationEvent(
         final UserRegisterEvent userRegisterEvent
     ) {

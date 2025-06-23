@@ -82,13 +82,13 @@ public class VerificationTokensService {
                 verificationTokenType,
                 metadataValue,
                 new Date(tokenExpirationMilliseconds),
-                user
+                user.getUserId()
             ))
             .orElseGet(() -> new VerificationTokenEntity(
                 token,
                 verificationTokenType,
-                new Date(tokenExpirationMilliseconds),
-                user
+                user.getUserId(),
+                new Date(tokenExpirationMilliseconds)
             ));
 
         return this.verificationTokensRepository.save(verificationToken);
