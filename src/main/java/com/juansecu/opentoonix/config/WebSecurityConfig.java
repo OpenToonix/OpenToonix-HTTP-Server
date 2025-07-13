@@ -31,7 +31,8 @@ public class WebSecurityConfig {
                         "/api-docs/**",
                         "/auth/**",
                         "/docs",
-                        "/swagger-ui/**"
+                        "/swagger-ui/**",
+                        "/verification-tokens/verify"
                     ).permitAll()
                     .requestMatchers("/avatars").hasAuthority("USER")
                     .anyRequest().authenticated()

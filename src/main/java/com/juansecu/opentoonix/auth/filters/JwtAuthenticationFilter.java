@@ -2,6 +2,7 @@ package com.juansecu.opentoonix.auth.filters;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,6 +10,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,8 +18,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.juansecu.opentoonix.auth.enums.EAuthenticationError;
@@ -36,9 +38,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(
-        final HttpServletRequest request,
-        final HttpServletResponse response,
-        final FilterChain filterChain
+        @NonNull final HttpServletRequest request,
+        @NonNull final HttpServletResponse response,
+        @NonNull final FilterChain filterChain
     ) throws IOException, ServletException {
         UsernamePasswordAuthenticationToken authenticationToken;
         UserEntity user;
@@ -97,16 +99,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected boolean shouldNotFilter(final HttpServletRequest request) {
-        final AntPathRequestMatcher[] excludedMatchers = {
-            new AntPathRequestMatcher("/api-docs/**"),
-            new AntPathRequestMatcher("/auth/**"),
-            new AntPathRequestMatcher("/docs"),
-            new AntPathRequestMatcher("/swagger-ui/**")
-        };
+    protected boolean shouldNotFilter(@NonNull final HttpServletRequest request) {
+        final List<String> excludedPaths = Arrays.asList(
+            "/api-docs/**",
+            "/auth/**",
+            "/docs",
+            "/swagger-ui/**",
+            "/verification-tokens/verify"
+        );
+        final AntPathMatcher pathMatcher = new AntPathMatcher();
 
-        return Arrays
-            .stream(excludedMatchers)
-            .anyMatch((AntPathRequestMatcher matcher) -> matcher.matches(request));
+        // Check if the request path matches any of the excluded paths
+        for (final String excludedPath : excludedPaths) {
+            if (pathMatcher.match(excludedPath, request.getServletPath()))
+                return true;
+        }
+
+        return false;
     }
 }
