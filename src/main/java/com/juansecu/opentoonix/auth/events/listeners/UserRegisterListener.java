@@ -19,7 +19,7 @@ import com.juansecu.opentoonix.shared.providers.HostDetailsProvider;
 import com.juansecu.opentoonix.shared.services.EmailService;
 import com.juansecu.opentoonix.users.models.entities.UserEntity;
 import com.juansecu.opentoonix.verificationtokens.VerificationTokensConstants;
-import com.juansecu.opentoonix.verificationtokens.VerificationTokensService;
+import com.juansecu.opentoonix.verificationtokens.VerificationTokensApiService;
 import com.juansecu.opentoonix.verificationtokens.enums.EVerificationTokenType;
 import com.juansecu.opentoonix.verificationtokens.models.EmailVerificationTokenMetadataModel;
 import com.juansecu.opentoonix.verificationtokens.models.entities.VerificationTokenEntity;
@@ -37,7 +37,7 @@ public class UserRegisterListener {
     private final EmailService emailService;
     private final HostDetailsProvider hostDetailsProvider;
     private final ObjectMapper objectMapper;
-    private final VerificationTokensService verificationTokensService;
+    private final VerificationTokensApiService verificationTokensApiService;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -65,16 +65,16 @@ public class UserRegisterListener {
             return;
         }
 
-        verificationToken = this.verificationTokensService.generateVerificationToken(
+        verificationToken = this.verificationTokensApiService.generateVerificationToken(
             newUser,
             EVerificationTokenType.EMAIL_VERIFICATION_TOKEN,
             Optional.of(verificationTokenMetadata)
         );
         verificationEmailMessage = this.replaceEmailVerificationParameters(
-            this.verificationTokensService.getEncryptedToken(
+            this.verificationTokensApiService.getEncryptedToken(
                 verificationToken.getToken().toString()
             ),
-            newUser.getUsername()
+            newUser
         );
 
         UserRegisterListener.CONSOLE_LOGGER.info(
@@ -102,7 +102,7 @@ public class UserRegisterListener {
 
     private String replaceEmailVerificationParameters(
         final String encryptedToken,
-        final String username
+        final UserEntity user
     ) {
         return this.newAccountEmailVerificationMessage
             .replace(
@@ -111,7 +111,7 @@ public class UserRegisterListener {
                     VerificationTokensConstants.HOURS_OF_EXPIRING_EMAIL_VERIFICATION_TOKEN
                 )
             )
-            .replace("{username}", username)
+            .replace("{username}", user.getUsername())
             .replace(
                 "{user_account_verification_link}",
                 this.hostDetailsProvider.getPublicAddress() +
@@ -119,8 +119,8 @@ public class UserRegisterListener {
                     encryptedToken +
                     "&type=" +
                     EVerificationTokenType.EMAIL_VERIFICATION_TOKEN +
-                    "&username=" +
-                    username
+                    "&userId=" +
+                    user.getUserId()
             );
     }
 }

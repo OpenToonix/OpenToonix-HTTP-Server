@@ -5,12 +5,11 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.juansecu.opentoonix.users.UsersConstants;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.stereotype.Service;
 
@@ -23,15 +22,12 @@ import com.juansecu.opentoonix.verificationtokens.repositories.IVerificationToke
 
 @RequiredArgsConstructor
 @Service
-public class VerificationTokensService {
-    private static final Logger CONSOLE_LOGGER = LogManager.getLogger(VerificationTokensService.class);
-
-    @Autowired
-    @Qualifier("verificationTokensTextEncryptor")
-    private TextEncryptor verificationTokensTextEncryptor;
+public class VerificationTokensApiService {
+    private static final Logger CONSOLE_LOGGER = LogManager.getLogger(VerificationTokensApiService.class);
 
     private final CryptoUtil cryptoUtil;
     private final IVerificationTokensRepository verificationTokensRepository;
+    private final TextEncryptor verificationTokensTextEncryptor;
 
     public VerificationTokenEntity generateVerificationToken(
         final UserEntity user,
@@ -44,9 +40,10 @@ public class VerificationTokensService {
 
         final UUID token = UUID.randomUUID();
 
-        VerificationTokensService.CONSOLE_LOGGER.info(
-            "Generating {}...",
-            verificationTokenType
+        VerificationTokensApiService.CONSOLE_LOGGER.info(
+            "Generating {} for user {}...",
+            verificationTokenType,
+            user.getUsername()
         );
 
         tokenExpirationDateTime = switch (verificationTokenType) {
@@ -71,9 +68,10 @@ public class VerificationTokensService {
             tokenExpirationDateTime
         );
 
-        VerificationTokensService.CONSOLE_LOGGER.info(
-            "Saving {}...",
-            verificationTokenType
+        VerificationTokensApiService.CONSOLE_LOGGER.info(
+            "Saving {} for user {}...",
+            verificationTokenType,
+            user.getUsername()
         );
 
         verificationToken = metadata
@@ -91,6 +89,12 @@ public class VerificationTokensService {
                 new Date(tokenExpirationMilliseconds)
             ));
 
+        VerificationTokensApiService.CONSOLE_LOGGER.info(
+            "Verification token of type {} for user {} saved successfully",
+            verificationTokenType,
+            user.getUsername()
+        );
+
         return this.verificationTokensRepository.save(verificationToken);
     }
 
@@ -101,12 +105,12 @@ public class VerificationTokensService {
         );
     }
 
-    public VerificationTokenEntity getVerificationToken(
+    public Optional<VerificationTokenEntity> getVerificationToken(
         final String encryptedToken,
         final EVerificationTokenType verificationTokenType,
         final UserEntity user
     ) {
-        VerificationTokensService.CONSOLE_LOGGER.info(
+        VerificationTokensApiService.CONSOLE_LOGGER.info(
             "Getting {} for user {}...",
             verificationTokenType,
             user.getUsername()
@@ -122,11 +126,11 @@ public class VerificationTokensService {
                 )
             );
         } catch (final IllegalArgumentException illegalArgumentException) {
-            VerificationTokensService.CONSOLE_LOGGER.info(
+            VerificationTokensApiService.CONSOLE_LOGGER.info(
                 "Invalid token"
             );
 
-            return null;
+            return Optional.empty();
         }
 
         return this.verificationTokensRepository
@@ -134,30 +138,31 @@ public class VerificationTokensService {
                 decryptedToken,
                 verificationTokenType,
                 user
-            )
-            .orElse(null);
+            );
     }
 
     public void verifyToken(
         final EVerificationTokenType verificationTokenType,
-        final String username,
         final HttpServletRequest request
     ) {
         if (
             (boolean) request.getAttribute(
-                VerificationTokensConstants.IS_INVALID_TOKEN_REQUEST_ATTRIBUTE_KEY
+                VerificationTokensConstants.IS_INVALID_TOKEN_REQUEST_ATTRIBUTE
             )
         )
             return;
 
+        final UserEntity user = (UserEntity) request.getAttribute(
+            UsersConstants.USER_REQUEST_ATTRIBUTE
+        );
         final VerificationTokenEntity verificationToken = (VerificationTokenEntity) request.getAttribute(
-            VerificationTokensConstants.VERIFICATION_TOKEN_REQUEST_ATTRIBUTE_KEY
+            VerificationTokensConstants.VERIFICATION_TOKEN_REQUEST_ATTRIBUTE
         );
 
-        VerificationTokensService.CONSOLE_LOGGER.info(
+        VerificationTokensApiService.CONSOLE_LOGGER.info(
             "Verifying {} for user {}...",
             verificationTokenType,
-            username
+            user.getUsername()
         );
 
         if (
@@ -165,29 +170,42 @@ public class VerificationTokensService {
                 LocalDateTime.now()
             )
         ) {
-            VerificationTokensService.CONSOLE_LOGGER.info(
+            VerificationTokensApiService.CONSOLE_LOGGER.info(
                 "Verification token expired"
             );
 
             request.setAttribute(
-                VerificationTokensConstants.IS_INVALID_TOKEN_REQUEST_ATTRIBUTE_KEY,
+                VerificationTokensConstants.IS_INVALID_TOKEN_REQUEST_ATTRIBUTE,
                 true
+            );
+
+            return;
+        } else if (
+            verificationTokenType == EVerificationTokenType.EMAIL_VERIFICATION_TOKEN &&
+            verificationToken.getUsesCount() >= 1
+        ) {
+            VerificationTokensApiService.CONSOLE_LOGGER.info(
+                "Verification token already used"
+            );
+
+            request.setAttribute(
+                VerificationTokensConstants.IS_ALREADY_USED_TOKEN_VIEW_ATTRIBUTE,
+                true
+            );
+            request.setAttribute(
+                VerificationTokensConstants.MESSAGE_VIEW_ATTRIBUTE_KEY,
+                "Your email address has already been verified"
             );
 
             return;
         }
 
-        VerificationTokensService.CONSOLE_LOGGER.info(
+        VerificationTokensApiService.CONSOLE_LOGGER.info(
             "Verification token validated successfully. Updating uses count..."
         );
 
         verificationToken.setUsesCount(verificationToken.getUsesCount() + 1);
 
         this.verificationTokensRepository.save(verificationToken);
-
-        request.setAttribute(
-            VerificationTokensConstants.IS_INVALID_TOKEN_REQUEST_ATTRIBUTE_KEY,
-            false
-        );
     }
 }

@@ -26,7 +26,7 @@ import com.juansecu.opentoonix.auth.enums.ELoggingInError;
 import com.juansecu.opentoonix.auth.events.UserRegisterEvent;
 import com.juansecu.opentoonix.auth.models.entities.RoleEntity;
 import com.juansecu.opentoonix.auth.repositories.IRolesRepository;
-import com.juansecu.opentoonix.avatars.AvatarsService;
+import com.juansecu.opentoonix.avatars.AvatarsApiService;
 import com.juansecu.opentoonix.avatars.dtos.requests.NewAvatarReqDto;
 import com.juansecu.opentoonix.shared.adapters.JwtAdapter;
 import com.juansecu.opentoonix.shared.models.CookieModel;
@@ -44,7 +44,7 @@ public class AuthService {
     private static final Logger CONSOLE_LOGGER = LogManager.getLogger(AuthService.class);
 
     private final ApplicationEventPublisher applicationEventPublisher;
-    private final AvatarsService avatarsService;
+    private final AvatarsApiService avatarsApiService;
     private final HostDetailsProvider hostDetailsProvider;
     private final JwtAdapter jwtAdapter;
     private final PasswordEncoder passwordEncoder;
@@ -145,7 +145,7 @@ public class AuthService {
             new UserInformationModel(
                 userInformation,
                 new CookieModel(
-                    AuthConstants.USER_AUTHENTICATION_COOKIE_NAME,
+                    AuthenticationConstants.USER_AUTHENTICATION_COOKIE_NAME,
                     "/",
                     this.jwtAdapter.generateJsonWebToken(
                         userInformation.getUsername(),
@@ -215,7 +215,7 @@ public class AuthService {
 
             newUser = this.usersRepository.save(newUser);
 
-            this.avatarsService.createAvatar(newAvatarReqDto, newUser);
+            this.avatarsApiService.createAvatar(newAvatarReqDto, newUser);
 
             this.applicationEventPublisher.publishEvent(
                 new UserRegisterEvent(newUser)

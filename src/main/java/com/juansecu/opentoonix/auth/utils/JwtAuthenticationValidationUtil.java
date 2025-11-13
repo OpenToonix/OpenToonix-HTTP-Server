@@ -12,7 +12,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
-import com.juansecu.opentoonix.auth.AuthConstants;
+import com.juansecu.opentoonix.auth.AuthenticationConstants;
 import com.juansecu.opentoonix.auth.models.AuthenticationDetails;
 import com.juansecu.opentoonix.shared.adapters.JwtAdapter;
 import com.juansecu.opentoonix.users.models.entities.UserEntity;
@@ -43,9 +43,13 @@ public class JwtAuthenticationValidationUtil {
         final boolean isValidAuthenticationHeaderValue = this.isValidToken(authenticationHeaderValue);
 
         if (
-            !isValidAuthenticationCookie &&
-            !isValidAuthenticationHeaderValue
-        ) return null;
+            !isValidAuthenticationCookie && !isValidAuthenticationHeaderValue ) {
+            JwtAuthenticationValidationUtil.CONSOLE_LOGGER.error(
+                "Invalid JSON Web Token"
+            );
+
+            return new AuthenticationDetails(false, null, null);
+        }
 
         if (isValidAuthenticationCookie) {
             token = Objects.requireNonNull(authenticationCookie).getValue();
@@ -56,9 +60,18 @@ public class JwtAuthenticationValidationUtil {
         }
 
         username = this.jwtAdapter.getSubject(token);
+
+        if (username == null) {
+            JwtAuthenticationValidationUtil.CONSOLE_LOGGER.error(
+                "Invalid JSON Web Token"
+            );
+
+            return new AuthenticationDetails(false, null, null);
+        }
+
         user = (UserEntity) this.userDetailsService.loadUserByUsername(username);
 
-        return new AuthenticationDetails(token, user);
+        return new AuthenticationDetails(true, token, user);
     }
 
     private Cookie getAuthenticationCookie(final HttpServletRequest request) {
@@ -75,7 +88,7 @@ public class JwtAuthenticationValidationUtil {
             if (
                 Objects.equals(
                     cookie.getName(),
-                    AuthConstants.USER_AUTHENTICATION_COOKIE_NAME
+                    AuthenticationConstants.USER_AUTHENTICATION_COOKIE_NAME
                 )
             ) {
                 authenticationCookie = cookie;

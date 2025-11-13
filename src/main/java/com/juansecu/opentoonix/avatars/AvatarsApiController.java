@@ -25,8 +25,8 @@ import com.juansecu.opentoonix.shared.dtos.responses.BaseResDto;
     description = "Avatar operations",
     name = "Avatars"
 )
-public class AvatarsController {
-    private final AvatarsService avatarsService;
+public class AvatarsApiController {
+    private final AvatarsApiService avatarsApiService;
 
     @ApiResponse(
         content = {
@@ -81,6 +81,6 @@ public class AvatarsController {
     public ResponseEntity<Object> getAvatarImage(
         @PathVariable(name = "avatarId") final UUID avatarId
     ) {
-        return this.avatarsService.getAvatarImage(avatarId);
+        return this.avatarsApiService.getAvatarImage(avatarId);
     }
 }

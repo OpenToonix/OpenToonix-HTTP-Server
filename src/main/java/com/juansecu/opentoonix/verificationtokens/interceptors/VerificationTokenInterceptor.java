@@ -38,7 +38,7 @@ public class VerificationTokenInterceptor implements HandlerInterceptor {
     ) {
         if (
             request.getAttribute(
-                VerificationTokensConstants.IS_INVALID_TOKEN_REQUEST_ATTRIBUTE_KEY
+                VerificationTokensConstants.IS_INVALID_TOKEN_REQUEST_ATTRIBUTE
             ) == null
         ) {
             modelAndView.setStatus(HttpStatus.BAD_REQUEST);
@@ -64,17 +64,17 @@ public class VerificationTokenInterceptor implements HandlerInterceptor {
         Object verificationTokenMetadata;
 
         final UserEntity user = (UserEntity) request.getAttribute(
-            UsersConstants.USER_REQUEST_ATTRIBUTE_KEY
+            UsersConstants.USER_REQUEST_ATTRIBUTE
         );
         final boolean isInvalidToken = (boolean) request.getAttribute(
-            VerificationTokensConstants.IS_INVALID_TOKEN_REQUEST_ATTRIBUTE_KEY
+            VerificationTokensConstants.IS_INVALID_TOKEN_REQUEST_ATTRIBUTE
         );
         final VerificationTokenEntity verificationToken = (VerificationTokenEntity) request.getAttribute(
-            VerificationTokensConstants.VERIFICATION_TOKEN_REQUEST_ATTRIBUTE_KEY
+            VerificationTokensConstants.VERIFICATION_TOKEN_REQUEST_ATTRIBUTE
         );
         final EVerificationTokenType verificationTokenType = EVerificationTokenType.valueOf(
             request.getParameter(
-                VerificationTokensConstants.TOKEN_TYPE_REQUEST_PARAMETER_KEY
+                VerificationTokensConstants.TOKEN_TYPE_REQUEST_PARAMETER
             )
         );
 
@@ -182,10 +182,10 @@ public class VerificationTokenInterceptor implements HandlerInterceptor {
         );
 
         final UserEntity user = (UserEntity) request.getAttribute(
-            UsersConstants.USER_REQUEST_ATTRIBUTE_KEY
+            UsersConstants.USER_REQUEST_ATTRIBUTE
         );
         final EVerificationTokenType verificationTokenType = (EVerificationTokenType) request.getAttribute(
-            VerificationTokensConstants.VERIFICATION_TOKEN_TYPE_REQUEST_ATTRIBUTE_KEY
+            VerificationTokensConstants.VERIFICATION_TOKEN_TYPE_REQUEST_ATTRIBUTE
         );
 
         if (
@@ -200,13 +200,13 @@ public class VerificationTokenInterceptor implements HandlerInterceptor {
             );
 
             request.setAttribute(
-                VerificationTokensConstants.IS_INVALID_TOKEN_REQUEST_ATTRIBUTE_KEY,
+                VerificationTokensConstants.IS_INVALID_TOKEN_REQUEST_ATTRIBUTE,
                 true
             );
         }
 
         request.setAttribute(
-            VerificationTokensConstants.IS_INVALID_TOKEN_REQUEST_ATTRIBUTE_KEY,
+            VerificationTokensConstants.IS_INVALID_TOKEN_REQUEST_ATTRIBUTE,
             false
         );
 

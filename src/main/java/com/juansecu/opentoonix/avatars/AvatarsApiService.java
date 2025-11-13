@@ -28,9 +28,9 @@ import com.juansecu.opentoonix.users.models.entities.UserEntity;
 
 @RequiredArgsConstructor
 @Service
-public class AvatarsService {
+public class AvatarsApiService {
     private static final String AVATAR_FILE_FORMAT_SUFFIX = ".png";
-    private static final Logger CONSOLE_LOGGER = LogManager.getLogger(AvatarsService.class);
+    private static final Logger CONSOLE_LOGGER = LogManager.getLogger(AvatarsApiService.class);
 
     @Value("${avatar.storage-folder-path}")
     private String avatarStorageFolderPath;
@@ -52,12 +52,12 @@ public class AvatarsService {
             .createFile(
                 Path.of(
                     this.avatarStorageFolderPath,
-                    uuid + AvatarsService.AVATAR_FILE_FORMAT_SUFFIX
+                    uuid + AvatarsApiService.AVATAR_FILE_FORMAT_SUFFIX
                 )
             )
             .toFile();
 
-        AvatarsService.CONSOLE_LOGGER.info(
+        AvatarsApiService.CONSOLE_LOGGER.info(
             "Creating avatar with the UUID {} for user {}...",
             uuid,
             user.getUsername()
@@ -66,7 +66,7 @@ public class AvatarsService {
         image = ImageIO.read(new ByteArrayInputStream(imageData));
         ImageIO.write(
             image,
-            AvatarsService.AVATAR_FILE_FORMAT_SUFFIX.replace(".", ""),
+            AvatarsApiService.AVATAR_FILE_FORMAT_SUFFIX.replace(".", ""),
             outputFile
         );
 
@@ -83,7 +83,7 @@ public class AvatarsService {
 
         this.avatarDao.save(newAvatar);
 
-        AvatarsService.CONSOLE_LOGGER.info(
+        AvatarsApiService.CONSOLE_LOGGER.info(
             "Avatar with the UUID {} for user {} has been created successfully",
             uuid,
             user.getUsername()
@@ -95,7 +95,7 @@ public class AvatarsService {
             final InputStream file = Files.newInputStream(
                 Path.of(
                     this.avatarStorageFolderPath,
-                    avatarId.toString() + AvatarsService.AVATAR_FILE_FORMAT_SUFFIX
+                    avatarId.toString() + AvatarsApiService.AVATAR_FILE_FORMAT_SUFFIX
                 )
             )
         ) {
@@ -106,7 +106,7 @@ public class AvatarsService {
                 HttpStatus.OK
             );
         } catch (IOException ioException) {
-            AvatarsService.CONSOLE_LOGGER.error(
+            AvatarsApiService.CONSOLE_LOGGER.error(
                 "There was an error while retrieving the requested user avatar: {}",
                 ioException.getMessage()
             );
