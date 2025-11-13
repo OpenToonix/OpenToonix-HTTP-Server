@@ -61,17 +61,16 @@ public class VerificationTokenFinderFilter extends OncePerRequestFilter {
                 "Missing required request parameters"
             );
 
-            request.setAttribute(
-                VerificationTokensConstants.IS_INVALID_TOKEN_REQUEST_ATTRIBUTE,
-                true
+            return;
+        } else if (!userIdParameter.matches("\\d+")) {
+            VerificationTokenFinderFilter.CONSOLE_LOGGER.error(
+                "The user ID is not a valid integer"
             );
-
-            filterChain.doFilter(request, response);
 
             return;
         }
 
-        userId = Integer.parseInt(request.getParameter("userId"));
+        userId = Integer.parseInt(userIdParameter);
 
         VerificationTokenFinderFilter.CONSOLE_LOGGER.info(
             "Verifying if user is authenticated and if the user ID matches with the token..."
@@ -82,13 +81,6 @@ public class VerificationTokenFinderFilter extends OncePerRequestFilter {
                 VerificationTokenFinderFilter.CONSOLE_LOGGER.error(
                     "The user ID does not match with the authenticated user account"
                 );
-
-                request.setAttribute(
-                    VerificationTokensConstants.IS_INVALID_TOKEN_REQUEST_ATTRIBUTE,
-                    true
-                );
-
-                filterChain.doFilter(request, response);
 
                 return;
             }
@@ -101,13 +93,6 @@ public class VerificationTokenFinderFilter extends OncePerRequestFilter {
                 "The user does not exist"
             );
 
-            request.setAttribute(
-                VerificationTokensConstants.IS_INVALID_TOKEN_REQUEST_ATTRIBUTE,
-                true
-            );
-
-            filterChain.doFilter(request, response);
-
             return;
         }
 
@@ -117,13 +102,6 @@ public class VerificationTokenFinderFilter extends OncePerRequestFilter {
             VerificationTokenFinderFilter.CONSOLE_LOGGER.error(
                 "The verification token type is not valid"
             );
-
-            request.setAttribute(
-                VerificationTokensConstants.IS_INVALID_TOKEN_REQUEST_ATTRIBUTE,
-                true
-            );
-
-            filterChain.doFilter(request, response);
 
             return;
         }
@@ -138,13 +116,6 @@ public class VerificationTokenFinderFilter extends OncePerRequestFilter {
             VerificationTokenFinderFilter.CONSOLE_LOGGER.error(
                 "Verification token not found"
             );
-
-            request.setAttribute(
-                VerificationTokensConstants.IS_INVALID_TOKEN_REQUEST_ATTRIBUTE,
-                true
-            );
-
-            filterChain.doFilter(request, response);
 
             return;
         }
