@@ -719,7 +719,8 @@ INSERT INTO Roles (Role_id, Name, Description)
 VALUES
     (1, 'ADMIN', 'Administrator'),
     (2, 'MODERATOR', 'Moderator'),
-    (3, 'USER', 'User');
+    (3, 'USER', 'User'),
+    (4, 'GAME_MASTER', 'Game Master');
 
 INSERT INTO Role_permissions (Role_id, Permission_id)
 VALUES
@@ -731,4 +732,9 @@ VALUES
     (2, 1),
     (2, 2),
     (2, 4),
-    (2, 5);
+    (2, 5),
+    (4, 1),
+    (4, 2),
+    (4, 3),
+    (4, 4),
+    (4, 5);
