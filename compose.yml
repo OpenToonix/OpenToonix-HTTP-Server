@@ -1,0 +1,52 @@
+name: opentoonix-http-server
+
+services:
+  mysql:
+    image: mysql:8
+    restart: always
+    container_name: opentoonix_mysql
+    environment:
+      MYSQL_DATABASE: ${DATABASE_NAME}
+      MYSQL_PASSWORD: ${DATABASE_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${DATABASE_USERNAME}
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "${DATABASE_USERNAME}", "-p${DATABASE_PASSWORD}"]
+      interval: 5s
+      timeout: 2s
+      retries: 5
+      start_period: 10s
+
+  http-server:
+    image: opentoonix-http-server
+    container_name: opentoonix_http-server
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      AVATAR_STORAGE_FOLDER_PATH: ${AVATAR_STORAGE_FOLDER_PATH}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:80}
+      DATABASE_HOST: mysql
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      DATABASE_PORT: 3306
+      DATABASE_USERNAME: ${DATABASE_USERNAME}
+      ISSUER_ACCOUNT_RELATED_NAME: ${ISSUER_ACCOUNT_RELATED_NAME:-${ISSUER_NAME}}
+      ISSUER_SUPPORT_ADDRESS: ${ISSUER_SUPPORT_ADDRESS}
+      JWT_SECRET: ${JWT_SECRET}
+      MAIL_SERVER_FROM_ACCOUNT_RELATED_EMAIL_ADDRESS: ${MAIL_SERVER_FROM_ACCOUNT_RELATED_EMAIL_ADDRESS}
+      MAIL_SERVER_HOST: ${MAIL_SERVER_HOST:-smtp.gmail.com}
+      MAIL_SERVER_PASSWORD: ${MAIL_SERVER_PASSWORD}
+      MAIL_SERVER_PORT: ${MAIL_SERVER_PORT:-587}
+      MAIL_SERVER_USERNAME: ${MAIL_SERVER_USERNAME}
+      PORT: ${PORT:-8080}
+      PUBLIC_ADDRESS: ${PUBLIC_ADDRESS:-http://localhost:8080}
+      VERIFICATION_TOKENS_SALT_KEY: ${VERIFICATION_TOKENS_SALT_KEY}
+      VERIFICATION_TOKENS_SECURITY_KEY: ${VERIFICATION_TOKENS_SECURITY_KEY}
+    ports:
+      - ${PORT:-8080}:${PORT:-8080}
+    volumes:
+      - ${LOCAL_AVATAR_STORAGE_FOLDER_PATH}:${AVATAR_STORAGE_FOLDER_PATH}
